@@ -403,12 +403,12 @@ gemini extensions install https://github.com/shreyassaw5394/debuganything</pre><
   </div>
   <h3 style="margin-top:36px;font-size:18px">Top contributors</h3>
   <p class="meta" style="margin-top:6px">Land a pull request (an adapter, a fixture, a doc) and you appear here automatically.</p>
-  <div class="wall" id="wall"><span class="dim" style="color:var(--dim)">loading from GitHub…</span></div>
+  <div class="wall" id="wall"><span class="dim" style="color:var(--dim)">loading…</span></div>
 </div></section>
 
 <footer><div class="wrap">
   <img src="logo.svg" alt="" width="28" height="28" style="border-radius:8px"><span>Debug Anything · MIT</span>
-  <div class="links"><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://www.npmjs.com/package/debuganything">npm</a><a href="https://pypi.org/project/debuganything/">PyPI</a><a href="https://discord.gg/htPuQ5grg">Discord</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Disclaimer</a></div>
+  <div class="links"><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://www.npmjs.com/package/debuganything">npm</a><a href="https://pypi.org/project/debuganything/">PyPI</a><a href="https://discord.gg/htPuQ5grg">Discord</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Disclaimer</a><a href="/privacy">Privacy</a><a href="#" data-cookie-settings>Cookie settings</a></div>
 </div>
 <div class="wrap" style="margin-top:14px;font-size:12.5px;line-height:1.6">Provided "as is", without warranty of any kind; the authors accept no liability for any damage arising from use. Only observe systems you own or are explicitly authorized to debug — you are solely responsible for authorization and legal compliance. Findings are automated diagnostics, not professional advice. An independent open-source project by individual contributors, unaffiliated with any employer or with the third-party tools it orchestrates. <a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Full disclaimer</a>.</div></footer>
 
@@ -491,20 +491,18 @@ const proLines=["$ npm run dev","> vite","Error: listen EADDRINUSE: address alre
 const proAfter=["$ debuganything port 3000","✔ inspect_sockets  81 ms","  HIGH  port 3000 is held by pid 61326 (node) in LISTEN [observed; e1,e2]","        command: node server.js. Debug Anything will not kill it; decide yourself.","# the agent found the owner in one call — you never asked."];
 function proLoop(){toast.classList.remove('show');typeLines(pro,proLines,{speed:18,after:250},()=>{setTimeout(()=>toast.classList.add('show'),400);setTimeout(()=>{toast.classList.remove('show');const d=document.createElement('span');pro.appendChild(d);typeLines(d,proAfter,{speed:18,after:250},()=>setTimeout(proLoop,6000));},2600);});}
 
-// ---- live community numbers (public APIs, client-side, graceful) ----
+// ---- live community numbers (served from this site; the browser contacts no third party) ----
 (async()=>{
   const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'k':String(n);
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-  const get=async u=>{try{const r=await fetch(u);return r.ok?await r.json():null;}catch{return null;}};
-  const repo=await get('https://api.github.com/repos/shreyassaw5394/debuganything');
-  if(repo){set('st-stars',fmt(repo.stargazers_count));set('st-forks',fmt(repo.forks_count));}
-  const npm=await get('https://api.npmjs.org/downloads/point/last-month/debuganything');
-  set('st-npm',npm&&typeof npm.downloads==='number'?fmt(npm.downloads):'new');
-  const py=await get('https://pypistats.org/api/packages/debuganything/recent');
-  set('st-pypi',py&&py.data&&typeof py.data.last_month==='number'?fmt(py.data.last_month):'new');
-  const contrib=await get('https://api.github.com/repos/shreyassaw5394/debuganything/contributors?per_page=24');
+  const escA=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  let st=null;try{const r=await fetch('/api/stats');st=r.ok?await r.json():null;}catch{}
+  if(st&&st.stars!=null){set('st-stars',fmt(st.stars));set('st-forks',fmt(st.forks??0));}
+  set('st-npm',st&&typeof st.npm==='number'?fmt(st.npm):'new');
+  set('st-pypi',st&&typeof st.pypi==='number'?fmt(st.pypi):'new');
   const wall=document.getElementById('wall');
-  if(contrib&&Array.isArray(contrib)&&contrib.length){set('st-contrib',fmt(contrib.length));wall.innerHTML=contrib.map(c=>`<a href="${c.html_url}" title="${c.contributions} commits"><img src="${c.avatar_url}&s=64" alt="">${c.login}<small>${c.contributions}</small></a>`).join('');}
+  const c=st&&Array.isArray(st.contributors)?st.contributors:[];
+  if(c.length){set('st-contrib',fmt(c.length));wall.innerHTML=c.map(p=>`<a href="${escA(p.url)}" title="${p.contributions} commits">${p.avatar&&p.avatar.startsWith('data:image/')?`<img src="${escA(p.avatar)}" alt="">`:''}${escA(p.login)}<small>${p.contributions}</small></a>`).join('');}
   else wall.innerHTML='<a href="https://github.com/shreyassaw5394/debuganything/graphs/contributors">see contributors on GitHub</a>';
 })();
 
@@ -517,6 +515,6 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return
 document.querySelectorAll('.reveal,#tl,#proactive').forEach(el=>io.observe(el));
 })();
 </script>
-<script defer src="/_vercel/insights/script.js"></script>
+<script src="/consent.js" defer></script>
 </body>
 </html>
