@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · Debug Anything</title>
+<meta name="description" content="What debuganything.dev and the Debug Anything tools collect: almost nothing, and nothing optional without your consent.">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="canonical" href="https://debuganything.dev/privacy">
+<style>
+:root{--bg:#0b0d12;--fg:#eef2f8;--muted:#9aa3b2;--acc:#7cc4ff;--line:#1f2434;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:56px 20px 80px}h1{font-size:34px;margin:0 0 6px}h2{font-size:20px;margin:36px 0 8px}
+p,li{color:var(--muted)}a{color:var(--acc)}strong{color:var(--fg)}code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:#151a28;padding:1px 6px;border-radius:5px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px}.top a{text-decoration:none;color:var(--fg);font-weight:600}
+button{font:600 14px system-ui,sans-serif;padding:8px 16px;border-radius:999px;border:1px solid #3a4258;background:transparent;color:var(--fg);cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><a href="/">← Debug Anything</a></div>
+  <h1>Privacy</h1>
+  <p>Last updated 27 October 2026</p>
+
+  <h2>The short version</h2>
+  <ul>
+    <li><strong>The tools collect nothing.</strong> The CLI, MCP server and Python package run on your machine and send no telemetry. Captures and reports stay in <code>~/.debuganything/</code> (or <code>~/.dea/</code>) on your disk.</li>
+    <li><strong>This website sets no cookies</strong> and loads nothing optional until you accept it.</li>
+    <li><strong>The analyzer runs in your browser.</strong> Text you paste into <a href="/analyze">/analyze</a> is processed locally and is never uploaded.</li>
+  </ul>
+
+  <h2>Who is responsible</h2>
+  <p>Debug Anything is an open-source project maintained by Shreyas Sawant. Contact for anything about privacy: <a href="mailto:shreyassaw@gmail.com">shreyassaw@gmail.com</a>.</p>
+
+  <h2>What this website processes</h2>
+  <ul>
+    <li><strong>Request logs.</strong> Our host, Vercel (United States), records the IP address, user agent, time and page of each request to deliver the site and protect it from abuse, and keeps them for a short period, never more than 30 days. Legal basis: legitimate interest in running a secure website.</li>
+    <li><strong>Analytics, only if you accept.</strong> Vercel Web Analytics counts page views and referrers. It sets no cookie and stores no identifier on your device. Legal basis: consent, which you can withdraw with <button type="button" data-cookie-settings>Change privacy choices</button>. Browser signals (Global Privacy Control, Do Not Track) are treated as a refusal.</li>
+    <li><strong>Your choice itself</strong> is stored in your browser's local storage under <code>dea_consent</code> so we don't ask again.</li>
+    <li><strong>Community numbers</strong> (stars, downloads, contributors) are fetched by our server from GitHub, npm and PyPI. Your browser does not contact those services when you view the page.</li>
+  </ul>
+  <p>We do not sell or share personal data, run advertising, or use cross-site tracking.</p>
+
+  <h2>Your rights</h2>
+  <p>Depending on where you live (for example under the GDPR, UK GDPR or California law) you can ask for access to, correction or deletion of personal data about you, object to processing, or complain to your data protection authority. Email us and we will answer within 30 days. Because we hold almost nothing that identifies you, most requests are answered by explaining that.</p>
+
+  <h2>Children</h2>
+  <p>This site and the tools are developer software and are not directed at children under 16.</p>
+
+  <h2>Links to other sites</h2>
+  <p>Links to GitHub, npm, PyPI and Discord take you to services with their own privacy policies.</p>
+
+  <h2>Changes</h2>
+  <p>We will update the date above when this page changes, and ask again for consent if what optional processing does changes.</p>
+</main>
+<script src="/consent.js" defer></script>
+</body>
+</html>
