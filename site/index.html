@@ -182,6 +182,43 @@ h1 span{background:none;-webkit-background-clip:initial;background-clip:initial;
 .tl::before{background:var(--line);opacity:1}
 .tile:hover{transform:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* upgrade: bigger type, solid tone panels instead of outlines, one light section, real proof */
+:root{--bg:#0a0b0d;--bg2:#0e1013;--card:#14161b;--card2:#1b1e24;--line:#22262e}
+body{background:var(--bg)}
+.wrap{max-width:1200px}
+section{padding:120px 0}
+h1{font-size:clamp(40px,4.5vw,66px);line-height:1;letter-spacing:-.035em}
+h2{font-size:clamp(32px,4.4vw,58px);letter-spacing:-.03em;max-width:20ch}
+.sub{color:#b4bcc8}
+.hero{padding:96px 0 40px}
+.term,.tile,.inst .box,.chain .box,.console,.pipe,.video,.toast{border-color:transparent}
+.term{background:#07080a}
+.tile,.inst .box{background:var(--card)}
+.inst .sub,.tile p{font-size:16px;line-height:1.55;color:#b4bcc8}
+.inst .box h3{font-size:16px;color:var(--fg)}
+.cmd{border-color:transparent;background:var(--card2)}
+.btn{border-color:transparent;background:var(--card2)}
+.btn.primary{background:var(--acc);color:#04111b;border-color:var(--acc)}
+.hero .wrap.proof-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:56px;align-items:stretch}
+.proof-strip p{margin:0;background:var(--card);padding:22px 24px;color:#b4bcc8;font-size:15px}
+.proof-strip b{display:block;color:var(--fg);font-size:clamp(28px,3vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:6px}
+.leak-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:8px;margin-top:40px;align-items:start}
+.leak-grid figure{margin:0}
+.leak-grid .video{border-radius:12px;overflow:hidden;background:#07080a}
+.leak-grid .report{background:var(--card);border-radius:12px;overflow:hidden}
+.leak-grid .report img{display:block;width:100%;height:auto}
+.leak-grid figcaption{padding:12px 16px;font-size:14px;color:#b4bcc8}
+section.paper{background:#eceef2;color:#0b0d12}
+section.paper .sub{color:#3d4552}
+section.paper .chain .box{background:#fff;border-color:transparent}
+section.paper .chain .box h3{color:#4a5260}
+section.paper .chain pre{color:#0b0d12}
+section.paper .chain .arrow{color:#b5651d}
+section.paper .rule{background:#fff;color:#0b0d12}
+section.paper .evid{color:#5b3fb0}
+section.paper .badge.high{color:#b3301e}
+@media(max-width:900px){.hero .wrap.proof-strip{grid-template-columns:minmax(0,1fr)}.leak-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -192,15 +229,17 @@ h1 span{background:none;-webkit-background-clip:initial;background-clip:initial;
 
 <section class="hero"><div class="wrap">
   <div>
-    <h1>Your AI agent can write the code.<br><span>Now it can see it run.</span></h1>
-    <p class="sub">When your app is slow, stuck, crashing or eating memory, your AI agent used to read the code and guess. With Debug Anything it looks inside the <em>running</em> app, measures what is actually happening, and shows you the proof. One command to install. No terminal skills needed.</p>
+    <h1>Your agent writes the code.<br><span>Now it sees it run.</span></h1>
+    <p class="sub">When your app is slow, stuck, crashing or eating memory, your AI agent looks inside the <em>running</em> program, measures what is happening, and shows you the evidence behind every claim. It only looks; it never changes anything.</p>
     <div class="cmd"><span class="p">$</span><span id="cmd">npx debuganything why <em style="font-style:normal;color:var(--dim)">&lt;pid&gt;</em></span><button onclick="navigator.clipboard&&navigator.clipboard.writeText('npx debuganything why ');this.textContent='copied — add your pid'">copy</button></div>
-    <p class="meta" style="margin-top:8px">One command: attach → the right tools for the symptom → ranked findings, every one citing evidence. Agent setup: <code>npx debuganything setup</code> · No install? <a href="analyze">Paste tool output in the browser →</a></p>
-    <div class="ctas"><a class="btn primary" href="#video">Watch it find a leak · 40s</a><a class="btn" href="https://github.com/shreyassaw5394/debuganything">★ GitHub</a><a class="btn" href="docs/README.md">Read the docs</a></div>
+    <p class="meta" style="margin-top:8px">Set it up for your agent: <code>npx debuganything setup</code> · No install? <a href="analyze">Paste tool output in the browser →</a></p>
+    <div class="ctas"><a class="btn primary" href="#video">Watch it find a leak</a><a class="btn" href="https://github.com/shreyassaw5394/debuganything">GitHub</a></div>
     <p class="meta">Works with Claude Code, Cursor, Codex, Gemini CLI and anything that speaks MCP · Python: <code>pip install debuganything</code></p>
   </div>
   <div class="term" aria-label="Debug Anything session replay"><div class="bar"><i></i><i></i><i></i><span>debuganything — real session, replayed</span></div><pre id="replay"></pre></div>
-</div></section>
+</div>
+<div class="wrap proof-strip"><p><b>47.2 → 323.0 MB</b>a Node.js leak, measured in three commands</p><p><b>93%</b>of the heap traced to one array</p><p><b>0</b>changes made to your app. It only looks.</p></div>
+</section>
 
 
 <section id="plain" style="padding-top:20px"><div class="wrap">
@@ -249,8 +288,11 @@ h1 span{background:none;-webkit-background-clip:initial;background-clip:initial;
 
 <section id="video"><div class="wrap">
   <h2>A memory leak, found and named.</h2>
-  <p class="sub">Two snapshots, a diff, and the retainer: <code>Array retains 50 MB via Context.retained</code>, the module-level array in <code>server.js</code>. Real output, no edits.</p>
-  <div class="video reveal" style="margin-top:32px"><video src="docs/demo.mp4" poster="social.png" autoplay muted loop playsinline controls></video></div>
+  <p class="sub">Two snapshots, a diff, and the retainer: <code>Array retains 87.7 MB via Context.retained</code>, the module-level array in <code>server.js</code>. A real session, replayed, and the report it wrote.</p>
+  <div class="leak-grid reveal">
+    <figure class="video"><video id="leakvid" src="/media/leak-session.mp4" poster="/media/leak-session-poster.jpg" width="960" height="600" autoplay muted playsinline controls aria-label="A real Debug Anything session finding a Node.js memory leak, replayed"></video></figure>
+    <figure class="report"><img src="/media/report-findings.jpg" width="1400" height="967" alt="The HTML report from the same session: two high findings, each citing evidence ids" loading="lazy"><figcaption><code>debuganything report --html</code> writes one file you can share.</figcaption></figure>
+  </div>
 </div></section>
 
 <section id="real"><div class="wrap">
@@ -263,7 +305,7 @@ h1 span{background:none;-webkit-background-clip:initial;background-clip:initial;
   <p class="meta" style="margin-top:14px">Full write-ups with the fix and how to prove it: <a href="docs/real-world.md">real-world.md</a> · <a href="docs/examples.md">10 copy-paste examples</a></p>
 </div></section>
 
-<section id="evidence"><div class="wrap">
+<section id="evidence" class="paper"><div class="wrap">
   <h2>No evidence, no claim.</h2>
   <p class="sub">A finding without evidence ids is rejected by the schema before it ever reaches the agent. Hover the chain.</p>
   <div class="chain reveal" id="chain">
@@ -438,21 +480,23 @@ const color=l=>{
 };
 // ---- hero replay (real session, macOS) ----
 const session=[
-"$ S=$(debuganything attach 61326 --json | jq -r .session_id)",
+"$ S=$(debuganything attach 34327 --json | jq -r .session_id)",
 "$ debuganything memory --session $S",
-"✔ snapshot_memory (snapshot_memory#2)  1.6 s",
-"  INFO  RSS 48.0 MB, stable over 1s [observed; e1,e2]",
-"$ node load.js 400   # 400 requests to /work",
+"✔ snapshot_memory (snapshot_memory#2)  3.7 s",
+"  INFO  RSS 47.2 MB, stable over 3s [observed; e1,e2]",
+"$ node load.js 300   # 300 requests to /work",
 "$ debuganything memory --session $S",
-"✔ snapshot_memory (snapshot_memory#3)  1.4 s",
-"  INFO  RSS 273.0 MB, stable over 1s [observed; e1,e2]",
-"  WARN  Array (object) retains 50.1 MB = 87% of the heap, held by system / Context.retained [observed; e5,e3]",
-"$ debuganything diff --session $S snapshot_memory#2 snapshot_memory#3",
-"✔ diff_runs (diff_runs#4)  2 ms",
-"  WARN  name=rss grew 48.0 MB → 273.0 MB (+468%) [observed; e2,e1]",
-"  HIGH  heap_summary: name=heap_total grew 6.8 MB → 57.5 MB [observed; e3,e1]",
-"  HIGH  heap_retainer: name=Array grew 2.0 KB → 50.1 MB [observed; e4,e1]",
-"# the leak: a module-level array called `retained`. evidence: diff_runs#4/e4"
+"✔ snapshot_memory (snapshot_memory#3)  3.4 s",
+"  WARN  Array (object) retains 37.6 MB = 85% of the heap, held by system / Context.retained [observed; e5,e3]",
+"$ node load.js 400",
+"$ debuganything memory --session $S",
+"✔ snapshot_memory (snapshot_memory#5)  3.4 s",
+"  WARN  Array (object) retains 87.7 MB = 93% of the heap, held by system / Context.retained [observed; e5,e3]",
+"$ debuganything diff --session $S snapshot_memory#2 snapshot_memory#5",
+"✔ diff_runs (diff_runs#6)  2 ms",
+"  WARN  name=rss grew 47.2 MB → 323.0 MB (+584%) [observed; e2,e1]",
+"  HIGH  heap_retainer: name=Array grew 2.0 KB → 87.7 MB [observed; e4,e1]",
+"# the leak: a module-level array called `retained`. evidence: diff_runs#6/e4"
 ];
 const replay=document.getElementById('replay');
 function typeLines(el,lines,opts,done){
@@ -530,5 +574,8 @@ document.querySelectorAll('.reveal,#tl,#proactive').forEach(el=>io.observe(el));
 })();
 </script>
 <script src="/consent.js" defer></script>
+<script>
+(function(){var v=document.getElementById("leakvid");if(!v)return;var r=matchMedia("(prefers-reduced-motion: reduce)").matches;var go=function(){try{v.currentTime=Math.min(6,(v.duration||18)/3)}catch(e){}};v.addEventListener("loadedmetadata",go,{once:true});v.addEventListener("ended",function(){go();if(!r)v.play().catch(function(){})});if(r){v.removeAttribute("autoplay");v.pause()}})();
+</script>
 </body>
 </html>
