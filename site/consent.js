@@ -8,10 +8,12 @@
   let loaded = false;
   const load = () => { if (loaded) return; loaded = true; const s = document.createElement("script"); s.defer = true; s.src = "/_vercel/insights/script.js"; document.head.appendChild(s); };
 
-  const css = `#dea-consent{position:fixed;left:12px;right:12px;bottom:12px;z-index:1000;max-width:640px;margin:0 auto;background:#121521;color:#eef2f8;border:1px solid #2a3044;border-radius:14px;padding:16px 18px;font:14px/1.5 system-ui,-apple-system,sans-serif;box-shadow:0 20px 50px rgba(0,0,0,.5)}
-#dea-consent p{margin:0 0 12px;color:#c3cad6}#dea-consent a{color:#7cc4ff}
+  const css = `#dea-consent{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:1000;max-width:600px;margin:0 auto;background:rgba(22,22,24,.78);color:#f4f4f2;border-radius:16px;padding:18px 20px;font:15px/1.5 "Archivo",ui-sans-serif,system-ui,sans-serif;-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.2);box-shadow:inset 1px 1px 0 rgba(255,255,255,.4),0 18px 40px -18px rgba(0,0,0,.75)}
+#dea-consent p{margin:0 0 14px;color:#d6d5d0}#dea-consent a{color:#fff}
 #dea-consent .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-#dea-consent button{font:600 14px system-ui,sans-serif;padding:9px 18px;border-radius:999px;border:1px solid #3a4258;background:#eef2f8;color:#0b0d12;cursor:pointer;min-width:120px}
+#dea-consent button{font:600 14px/1 inherit;font-family:inherit;padding:11px 18px;border-radius:10px;border:0;background:rgba(255,255,255,.12);color:#f4f4f2;cursor:pointer;min-width:110px;min-height:44px}
+#dea-consent button[data-a="1"]{background:var(--acc,#ffd21f);color:var(--acc-ink,#141100)}
+#dea-consent button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(max-width:520px){#dea-consent button{flex:1}}`;
 
   function banner() {

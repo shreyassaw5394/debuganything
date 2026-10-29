@@ -4,10 +4,18 @@
   "description": "Observe any running process. No breakpoints, no restarts, no instrumentation. Evidence, not guesses.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0b0d12",
-  "theme_color": "#0b0d12",
+  "background_color": "#0b0b0a",
+  "theme_color": "#0b0b0a",
   "icons": [
-    { "src": "logo-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "logo.svg", "sizes": "any", "type": "image/svg+xml" }
+    {
+      "src": "logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
   ]
 }

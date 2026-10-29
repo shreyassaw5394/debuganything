@@ -19,3 +19,4 @@ _site/
 
 # fixtures are real captured tool output; never ignore them
 !tests/fixtures/**
+
