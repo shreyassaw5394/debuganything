@@ -53,7 +53,7 @@ footer .links{flex-wrap:wrap;row-gap:8px}
 .hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;position:relative}
 @media(max-width:900px){.hero .wrap{grid-template-columns:1fr}}
 h1{font-size:clamp(38px,5.6vw,66px);font-weight:800;line-height:1.02}
-h1 span{background:linear-gradient(90deg,#9ad4ff,#5aa9f0);-webkit-background-clip:text;background-clip:text;color:transparent}
+
 .cmd{display:inline-flex;align-items:center;gap:14px;margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px 12px 18px;font:500 15px ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:0 0 0 0 var(--glow);transition:box-shadow .3s}
 .cmd:hover{box-shadow:0 0 0 6px var(--glow)}
 .cmd .p{color:var(--dim)}.cmd button{background:var(--acc);color:#061018;border:0;border-radius:8px;padding:7px 12px;font-weight:700;cursor:pointer;font-family:inherit}
@@ -218,7 +218,38 @@ section.paper .chain .arrow{color:#b5651d}
 section.paper .rule{background:#fff;color:#0b0d12}
 section.paper .evid{color:#5b3fb0}
 section.paper .badge.high{color:#b3301e}
+section.paper .k{color:#8a4b0c!important}
+#wall>a{padding:6px 12px}
 @media(max-width:900px){.hero .wrap.proof-strip{grid-template-columns:minmax(0,1fr)}.leak-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* editorial: lists and tables instead of card grids; readable dim text */
+:root{--dim:#8a93a3}
+h1 span{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:var(--acc)!important}
+.steps3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;margin-top:40px}
+.steps3 .big{font-size:22px;font-weight:600;color:var(--fg);margin:0 0 10px;letter-spacing:-.01em}
+.steps3 p{color:#b4bcc8;margin:0;max-width:40ch}
+table.ed{width:100%;border-collapse:collapse;margin-top:40px;font-size:16px}
+table.ed th,table.ed td{text-align:left;vertical-align:top;padding:16px 20px 16px 0;border-top:1px solid var(--line)}
+table.ed tbody tr:last-child>*{border-bottom:1px solid var(--line)}
+table.ed thead th{font-size:14px;font-weight:500;color:var(--dim);padding-top:0;border-top:0}
+table.ed tbody th{font-weight:600;color:var(--fg);width:26%}
+table.ed td{color:#b4bcc8}
+table.ed code{color:var(--fg);overflow-wrap:anywhere}
+.dimtxt{color:var(--dim);font-size:14px}
+dl.news{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px 40px;margin:40px 0 0}
+dl.news.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+dl.news dt{font-weight:600;font-size:18px;color:var(--fg);margin-bottom:8px}
+dl.news dd{margin:0;color:#b4bcc8;max-width:44ch}
+.signal-line{color:#b4bcc8;max-width:56ch;margin-top:20px}
+.signal-line code{color:var(--fg)}
+.safe{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+@media(max-width:640px){.safe{grid-template-columns:minmax(0,1fr)!important}}
+.numrow{display:flex;flex-wrap:wrap;gap:24px 56px;margin-top:40px}
+.numrow a{color:var(--muted);text-decoration:none;font-size:15px}
+.numrow b{display:block;font-size:44px;font-weight:600;letter-spacing:-.03em;color:var(--fg);line-height:1.05}
+.console .tag{font:600 13px/1.2 "Plex Sans",sans-serif;letter-spacing:0;text-transform:none;color:var(--dim)}
+@media(max-width:900px){.steps3,dl.news,dl.news.two{grid-template-columns:minmax(0,1fr)}table.ed tbody th{width:auto}}
+@media(max-width:640px){table.ed,table.ed tbody,table.ed tr,table.ed th,table.ed td{display:block;width:auto}table.ed thead{display:none}table.ed tr{border-top:1px solid var(--line);padding:12px 0}table.ed th,table.ed td{border:0!important;padding:2px 0}}
 </style>
 </head>
 <body>
@@ -242,14 +273,14 @@ section.paper .badge.high{color:#b3301e}
 </section>
 
 
-<section id="plain" style="padding-top:20px"><div class="wrap">
+<section id="plain"><div class="wrap">
   <h2>You say what's wrong. Your agent goes and looks.</h2>
-  <div class="tiles reveal" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
-    <div class="tile"><h3>You say it, however you say it</h3><p>“It's slow after a while.” “It just freezes.” “Memory keeps going up.” “Port already in use.” “The container keeps dying.”</p></div>
-    <div class="tile"><h3>The agent looks inside the running app</h3><p>Not the code on screen, the program actually running. Debug Anything uses the same tools senior engineers use, drives them for the agent, and keeps it safe: it only watches, never changes anything.</p></div>
-    <div class="tile"><h3>You get the cause, with a receipt</h3><p>“This list grows and is never emptied.” “This function uses 58% of the CPU.” “Two threads are waiting on each other.” Every sentence points at the measurement behind it, so it can't make things up.</p></div>
+  <div class="steps3 reveal">
+    <div><p class="big">You say it, however you say it.</p><p>“It's slow after a while.” “It just freezes.” “Memory keeps going up.” “Port already in use.” “The container keeps dying.”</p></div>
+    <div><p class="big">It looks inside the running app.</p><p>Not the code on screen: the program actually running. It drives the same tools senior engineers use, inside hard limits, and only ever watches.</p></div>
+    <div><p class="big">You get the cause, with a receipt.</p><p>“This list grows and is never emptied.” “This function uses 58% of the CPU.” Every sentence points at the measurement behind it.</p></div>
   </div>
-  <p class="meta" style="margin-top:18px">Then it fixes the code the way it already can, measures again, and shows the before/after. That is the whole loop.</p>
+  <p class="meta">Then it fixes the code the way it already can, measures again, and shows the before and after.</p>
 </div></section>
 
 <section id="how"><div class="wrap">
@@ -325,15 +356,17 @@ open it. same bytes the agent saw.</pre></div>
 <section id="workflow"><div class="wrap">
   <h2>From one laptop to the whole team in a week.</h2>
   <p class="sub">One command per developer, one command per repo, evidence in pull requests, a gate in CI. Nothing to host.</p>
-  <div class="tl" id="tl">
-    <div class="st"><div class="dot">0</div><h3>You</h3><p>Register with your agent. Ask it something about a running process.</p><code>npx debuganything setup</code></div>
-    <div class="st"><div class="dot">1</div><h3>Your repo</h3><p>Commit three files; every teammate's agent gets Debug Anything and the rule for when to use it.</p><code>debuganything init</code></div>
-    <div class="st"><div class="dot">2</div><h3>Pull requests</h3><p>Perf and bug fixes carry run ids. Reviewers open the artifact instead of asking "did you measure?"</p><code>debuganything diff profile_cpu#2 profile_cpu#3</code></div>
-    <div class="st"><div class="dot">3</div><h3>CI</h3><p>Smoke test under two snapshots; fail the job if RSS grows.</p><code>debuganything diff … --json | jq -e …</code></div>
-    <div class="st"><div class="dot">4</div><h3>Containers</h3><p>Linux hosts attach by container name. Kubernetes via an ephemeral debug container.</p><code>kubectl debug … -- debuganything why 1</code></div>
-    <div class="st"><div class="dot">5</div><h3>On-call agent</h3><p>A Python agent reacts to the alert, measures, posts findings with the report path.</p><code>pip install debuganything</code></div>
-  </div>
-  <p class="meta" style="margin-top:22px">Day-by-day guide: <a href="docs/workflows.md">workflows.md</a></p>
+  <table class="ed reveal">
+    <tbody>
+      <tr><th scope="row">You</th><td>Register it with your agent, then ask about a running process.</td><td><code>npx debuganything setup</code></td></tr>
+      <tr><th scope="row">Your repo</th><td>Commit three files and every teammate's agent gets it, with the rule for when to use it.</td><td><code>debuganything init</code></td></tr>
+      <tr><th scope="row">Pull requests</th><td>Fixes carry run ids. Reviewers open the artifact instead of asking “did you measure?”</td><td><code>debuganything diff profile_cpu#2 profile_cpu#3</code></td></tr>
+      <tr><th scope="row">CI</th><td>Run the smoke test between two snapshots and fail the job if memory grows.</td><td><code>debuganything diff … --json | jq -e …</code></td></tr>
+      <tr><th scope="row">Containers</th><td>Attach by container name on Linux hosts; Kubernetes through an ephemeral debug container.</td><td><code>kubectl debug … -- debuganything why 1</code></td></tr>
+      <tr><th scope="row">On-call</th><td>A Python agent reacts to the alert, measures, and posts findings with the report path.</td><td><code>pip install debuganything</code></td></tr>
+    </tbody>
+  </table>
+  <p class="meta">Day-by-day guide: <a href="docs/workflows.md">workflows.md</a></p>
 </div></section>
 
 <section id="proactive"><div class="wrap">
@@ -342,7 +375,7 @@ open it. same bytes the agent saw.</pre></div>
     <div class="term reveal" style="position:relative;min-height:300px"><div class="bar"><i></i><i></i><i></i><span>claude code</span></div><pre id="pro-term" style="min-height:250px"></pre><div class="toast" id="toast"><b>[Debug Anything]</b> The last command's output shows a runtime problem signal. <br>port_busy (“EADDRINUSE :::3000”): run <code>debuganything port 3000</code>; never kill it blindly.</div></div>
     <div>
       <p class="sub" style="margin-top:0">The skill and the MCP instructions tell the agent to attach and measure on these signals. In Claude Code, a 40 ms hook spots them in command output and prompts, and nudges the model toward the right tool. Read-only observation needs no permission; packet capture always does.</p>
-      <div class="signals"><span>EADDRINUSE</span><span>ECONNREFUSED</span><span>EMFILE</span><span>exit 137</span><span>OOMKilled</span><span>SIGSEGV</span><span>test timeout</span><span>"it hangs"</span><span>"it's slow"</span><span>"memory keeps growing"</span><span>after a perf change</span></div>
+      <p class="signal-line">It reacts to <code>EADDRINUSE</code>, <code>ECONNREFUSED</code>, <code>EMFILE</code>, exit 137, <code>OOMKilled</code>, <code>SIGSEGV</code>, test timeouts, after a performance change, and to you saying “it hangs”, “it's slow” or “memory keeps growing”.</p>
       <p class="meta"><a href="docs/proactive.md">How it works, and the off switch</a></p>
     </div>
   </div>
@@ -350,87 +383,58 @@ open it. same bytes the agent saw.</pre></div>
 
 <section id="observe"><div class="wrap">
   <h2>The tools SREs trust. Driven by the agent.</h2>
-  <div class="tiles reveal">
-    <div class="tile"><h3>Sockets &amp; files</h3><p>Listening ports, connections by remote, CLOSE_WAIT pileups, fd growth, deleted-but-open files.</p><div class="req">lsof · Linux, macOS · no root</div></div>
-    <div class="tile"><h3>Node.js heap</h3><p>Heap snapshot, exact top retainers with the retaining path, JS main-thread stack.</p><div class="req">inspector · built in</div></div>
-    <div class="tile"><h3>Python</h3><p>CPU flamegraph, every thread's stack, lock / join / sleep / I/O classification from source lines, deadlocks.</p><div class="req">py-spy</div></div>
-    <div class="tile"><h3>Linux syscalls</h3><p>Top syscalls by time, slowest calls with paths and addresses, error counts, blocking share.</p><div class="req">strace</div></div>
-    <div class="tile"><h3>Native · Go · Java</h3><p>perf or sample flamegraphs; gdb / lldb thread dumps with mutex vs idle classification.</p><div class="req">perf, gdb · sample, lldb</div></div>
-    <div class="tile"><h3>Network</h3><p>Per-remote bytes, RSTs, unanswered SYNs, retransmits, DNS, .pcap. Filter scoped to the target.</p><div class="req">tcpdump · consent</div></div>
-    <div class="tile"><h3>Docker</h3><p>OOM kills, exit codes, restarts, limits vs usage, cgroup throttling, log tail.</p><div class="req">docker</div></div>
-    <div class="tile"><h3>Captured it yourself?</h3><p>Needs root? Debug Anything prints the sudo command; you run it and <code>debuganything import</code> the file. strace, fs_usage, perf, py-spy, sample, gdb/lldb, lsof, tcpdump.</p><div class="req">debuganything import · macOS trace via fs_usage</div></div>
-    <div class="tile"><h3>Before / after</h3><p>Diff any two runs: what grew, appeared, disappeared. Proof for the PR.</p><div class="req">diff_runs</div></div>
-  </div>
+  <table class="ed reveal">
+    <thead><tr><th scope="col">Where</th><th scope="col">What it sees</th><th scope="col">Uses</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Sockets and files</th><td>Listening ports, connections by remote, CLOSE_WAIT pile-ups, descriptor growth, deleted-but-open files.</td><td>lsof, no root</td></tr>
+      <tr><th scope="row">Node.js heap</th><td>Heap snapshots, top retainers with the retaining path, the main-thread stack.</td><td>inspector, built in</td></tr>
+      <tr><th scope="row">Python</th><td>CPU flamegraph, every thread's stack, lock / join / sleep / I/O from source lines, deadlocks.</td><td>py-spy</td></tr>
+      <tr><th scope="row">Linux syscalls</th><td>Top syscalls by time, slowest calls with paths, error counts, blocking share.</td><td>strace</td></tr>
+      <tr><th scope="row">Native, Go, Java</th><td>perf or sample flamegraphs; gdb / lldb thread dumps; JVM and goroutine dumps.</td><td>perf, gdb, sample, lldb</td></tr>
+      <tr><th scope="row">Network</th><td>Bytes per remote, resets, unanswered SYNs, retransmits, DNS, a scoped .pcap.</td><td>tcpdump, asks first</td></tr>
+      <tr><th scope="row">Docker</th><td>OOM kills, exit codes, restarts, limits against usage, throttling, log tail.</td><td>docker</td></tr>
+      <tr><th scope="row">Captured it yourself</th><td>Needs root? It prints the command; you run it and import the file.</td><td><code>debuganything import</code></td></tr>
+      <tr><th scope="row">Before and after</th><td>Diff any two runs: what grew, appeared or disappeared. Proof for the PR.</td><td><code>diff_runs</code></td></tr>
+    </tbody>
+  </table>
 </div></section>
 
 <section id="new"><div class="wrap">
   <h2>New in October 2026.</h2>
-  <div class="inst reveal" style="margin-top:20px">
-    <div class="box">
-      <h3>The <code>inspect-product</code> skill <span style="color:#7cc4ff;font-size:13px">new</span></h3>
-      <p class="sub" style="margin:8px 0 0">Audit a whole product instead of one bug. The agent signs up fresh, walks the real path, watches the server while it does, and reports findings that each carry a reproduction. On its first run against a live app it found a balance that never refreshed on screen — twenty points earned, nothing shown, until you happened to navigate.</p>
-    </div>
-    <div class="box">
-      <h3>Java and Go</h3>
-      <p class="sub" style="margin:8px 0 0">JVM thread dumps and goroutine dumps, live or pasted. Deadlocks the JVM reports itself, monitor contention, goroutine leaks by parked site, and goroutines stuck for minutes.</p>
-    </div>
-    <div class="box">
-      <h3>Paste, don't install</h3>
-      <p class="sub" style="margin:8px 0 0">The <a href="analyze">analyzer</a> reads strace, py-spy, jstack, goroutine, lsof, gdb, perf and tcpdump output in your browser. Nothing is uploaded.</p>
-    </div>
-    <div class="box">
-      <h3>Reports you can send</h3>
-      <p class="sub" style="margin:8px 0 0"><code>debuganything report --html</code> writes one self-contained file: ranked findings, evidence you can expand, flamegraphs embedded. Paste it in a thread.</p>
-    </div>
-    <div class="box">
-      <h3>Compare against a healthy run</h3>
-      <p class="sub" style="margin:8px 0 0">Record a session while things are fine, then diff a broken one against it: <code>debuganything diff --session now '&lt;baseline&gt;:inspect_files' inspect_files</code>.</p>
-    </div>
-    <div class="box">
-      <h3>When CI hangs</h3>
-      <p class="sub" style="margin:8px 0 0">The <a href="https://github.com/shreyassaw5394/debuganything-action">GitHub Action</a> wraps your test command. On a timeout it attaches before the kill and uploads stacks, sockets and findings.</p>
-    </div>
-  </div>
+  <dl class="news reveal">
+    <div><dt>The inspect-product skill</dt><dd>Audit a whole product, not one bug. The agent signs up fresh, walks the real path, watches the server and reports findings that each carry a reproduction.</dd></div>
+    <div><dt>Java and Go</dt><dd>JVM thread dumps and goroutine dumps, live or pasted: deadlocks, monitor contention, goroutine leaks by parked site.</dd></div>
+    <div><dt>Paste, don't install</dt><dd>The <a href="analyze">analyzer</a> reads strace, py-spy, jstack, goroutine, lsof, gdb, perf and tcpdump output in your browser. Nothing is uploaded.</dd></div>
+    <div><dt>Reports you can send</dt><dd><code>debuganything report --html</code> writes one file: ranked findings, expandable evidence, embedded flamegraphs.</dd></div>
+    <div><dt>Compare with a healthy run</dt><dd>Record a session while things are fine, then diff a broken one against it.</dd></div>
+    <div><dt>When CI hangs</dt><dd>The <a href="https://github.com/shreyassaw5394/debuganything-action">GitHub Action</a> attaches before the kill and uploads stacks, sockets and findings.</dd></div>
+  </dl>
 </div></section>
 
 <section id="skills"><div class="wrap">
-  <h2>Your agent knows <em>when</em> to look, not just how.</h2>
+  <h2>Your agent knows when to look, not just how.</h2>
   <p class="sub">Skills are standing instructions your agent reads on its own. Debug Anything ships two, and <code>npx debuganything setup</code> installs both.</p>
-  <div class="inst reveal" style="margin-top:22px">
-    <div class="box">
-      <h3>debug-anything</h3>
-      <p class="sub" style="margin:8px 0 10px">Fix the bug in front of you. Fires on its own when a command hangs, a port is taken, a process is killed for memory, or you say <em>slow</em>, <em>stuck</em> or <em>leaking</em> — attach, measure, answer with evidence ids.</p>
-      <pre><b>npx</b> debuganything setup</pre>
-    </div>
-    <div class="box">
-      <h3>inspect-product <span style="color:#7cc4ff;font-size:13px">new</span></h3>
-      <p class="sub" style="margin:8px 0 10px">Audit a whole product, not one bug. The agent walks your running app as a brand-new user, observes the runtime underneath it, and returns ranked findings that each carry a reproduction and proof.</p>
-      <pre>"review the product and tell me
- what to fix before launch"</pre>
-    </div>
-  </div>
-  <div class="box" style="margin-top:18px">
-    <h3>What inspect-product refuses to do</h3>
-    <p class="sub" style="margin:8px 0 0">Generic advice counts as failure. Every finding names the steps, what was observed and where it lives — if it can't be reproduced it is filed as a question, not a finding. It checks the things reviews skip: what one user costs you at ten times the usage, whether a free account can be farmed, and whether you can even measure if people come back.</p>
-  </div>
+  <dl class="news two reveal">
+    <div><dt>debug-anything</dt><dd>Fix the bug in front of you. It fires when a command hangs, a port is taken, a process is killed for memory, or you say slow, stuck or leaking, and answers with evidence ids.</dd></div>
+    <div><dt>inspect-product</dt><dd>Audit a whole product as a brand-new user. Generic advice counts as failure: every finding names the steps, what was observed and where it lives, or it is filed as a question.</dd></div>
+  </dl>
 </div></section>
 
 <section id="install"><div class="wrap">
   <h2>One line, any agent.</h2>
-  <div class="inst reveal">
-    <div class="box"><h3>MCP · Claude Code, Cursor, Codex, Gemini CLI</h3><pre><b>npx</b> debuganything setup</pre></div>
-    <div class="box"><h3>Your repo, your whole team</h3><pre><b>debuganything</b> init   <span class="dim" style="color:#5f6878"># commit .mcp.json, .cursor/mcp.json, AGENTS.md</span></pre></div>
-    <div class="box"><h3>No agent? One command</h3><pre><b>debuganything</b> why 12345 --symptom slow</pre></div>
-    <div class="box"><h3>Agent skill</h3><pre><b>npx</b> skills add shreyassaw5394/debuganything</pre></div>
-    <div class="box"><h3>Python · LangChain · LlamaIndex · CrewAI</h3><pre><b>pip</b> install 'debuganything[langchain]'
-from debuganything.langchain import debuganything_tools</pre></div>
-    <div class="box"><h3>One click</h3><pre><a href="https://cursor.com/en/install-mcp?name=debuganything&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImRlYnVnYW55dGhpbmdAbGF0ZXN0Iiwic2VydmUiXX0=">Install in Cursor →</a>
-<a href="https://vscode.dev/redirect/mcp/install?name=debuganything&config=%7B%22name%22%3A%22debuganything%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22debuganything%40latest%22%2C%22serve%22%5D%7D">Install in VS Code →</a></pre></div>
-    <div class="box"><h3>Claude Code plugin · Gemini extension</h3><pre>/plugin marketplace add shreyassaw5394/debuganything
-/plugin install debuganything@debuganything
-gemini extensions install https://github.com/shreyassaw5394/debuganything</pre></div>
-    <div class="box"><h3>Any MCP client</h3><pre>{"command":"npx","args":["-y","debuganything@latest","serve"]}</pre></div>
-  </div>
+  <table class="ed reveal">
+    <tbody>
+      <tr><th scope="row">Claude Code, Cursor, Codex, Gemini CLI</th><td><code>npx debuganything setup</code></td></tr>
+      <tr><th scope="row">Your repo, your whole team</th><td><code>debuganything init</code> <span class="dimtxt">commits .mcp.json, .cursor/mcp.json and AGENTS.md</span></td></tr>
+      <tr><th scope="row">No agent</th><td><code>debuganything why 12345 --symptom slow</code></td></tr>
+      <tr><th scope="row">Agent skill</th><td><code>npx skills add shreyassaw5394/debuganything</code></td></tr>
+      <tr><th scope="row">Python, LangChain, LlamaIndex, CrewAI</th><td><code>pip install 'debuganything[langchain]'</code></td></tr>
+      <tr><th scope="row">Claude Code plugin</th><td><code>/plugin marketplace add shreyassaw5394/debuganything</code></td></tr>
+      <tr><th scope="row">Gemini extension</th><td><code>gemini extensions install https://github.com/shreyassaw5394/debuganything</code></td></tr>
+      <tr><th scope="row">One click</th><td><a href="https://cursor.com/en/install-mcp?name=debuganything&amp;config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImRlYnVnYW55dGhpbmdAbGF0ZXN0Iiwic2VydmUiXX0=">Install in Cursor</a> · <a href="https://vscode.dev/redirect/mcp/install?name=debuganything&amp;config=%7B%22name%22%3A%22debuganything%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22debuganything%40latest%22%2C%22serve%22%5D%7D">Install in VS Code</a></td></tr>
+      <tr><th scope="row">Any MCP client</th><td><code>{"command":"npx","args":["-y","debuganything@latest","serve"]}</code></td></tr>
+    </tbody>
+  </table>
 </div></section>
 
 <section id="safety" style="padding-top:40px"><div class="wrap">
@@ -447,19 +451,17 @@ gemini extensions install https://github.com/shreyassaw5394/debuganything</pre><
 </div></section>
 
 
-<section id="community" style="padding-top:40px"><div class="wrap">
+<section id="community"><div class="wrap">
   <h2>Built in the open. Numbers live.</h2>
-  <div class="tiles reveal" id="stats" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
-    <a class="tile" href="https://github.com/shreyassaw5394/debuganything/stargazers"><div class="num" id="st-stars">—</div><p>GitHub stars</p></a>
-    <a class="tile" href="https://github.com/shreyassaw5394/debuganything/network/members"><div class="num" id="st-forks">—</div><p>Forks</p></a>
-    <a class="tile" href="https://www.npmjs.com/package/debuganything"><div class="num" id="st-npm">—</div><p>npm downloads · 30 days</p></a>
-    <a class="tile" href="https://pypi.org/project/debuganything/"><div class="num" id="st-pypi">—</div><p>PyPI downloads · 30 days</p></a>
-    <a class="tile" href="https://github.com/shreyassaw5394/debuganything/graphs/contributors"><div class="num" id="st-contrib">—</div><p>Contributors</p></a>
-    <a class="tile" href="https://discord.gg/htPuQ5grg"><div class="num">Chat</div><p>Discord</p></a>
+  <div class="numrow reveal" id="stats">
+    <a href="https://github.com/shreyassaw5394/debuganything/stargazers"><b id="st-stars">–</b>GitHub stars</a>
+    <a href="https://github.com/shreyassaw5394/debuganything/network/members"><b id="st-forks">–</b>forks</a>
+    <a href="https://www.npmjs.com/package/debuganything"><b id="st-npm">–</b>npm downloads, 30 days</a>
+    <a href="https://pypi.org/project/debuganything/"><b id="st-pypi">–</b>PyPI downloads, 30 days</a>
+    <a href="https://github.com/shreyassaw5394/debuganything/graphs/contributors"><b id="st-contrib">–</b>contributors</a>
   </div>
-  <h3 style="margin-top:36px;font-size:18px">Top contributors</h3>
-  <p class="meta" style="margin-top:6px">Land a pull request (an adapter, a fixture, a doc) and you appear here automatically.</p>
-  <div class="wall" id="wall"><span class="dim" style="color:var(--dim)">loading…</span></div>
+  <p class="meta">Land a pull request (an adapter, a fixture, a doc) and you appear here automatically. <a href="https://discord.gg/htPuQ5grg">Join the Discord</a>.</p>
+  <div class="wall" id="wall"></div>
 </div></section>
 
 <footer><div class="wrap">
