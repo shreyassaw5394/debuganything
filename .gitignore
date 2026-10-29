@@ -19,3 +19,6 @@ _site/
 
 # fixtures are real captured tool output; never ignore them
 !tests/fixtures/**
+
+# fetched at build time (ITF Free Font License: self-host only, no redistribution)
+site/fonts/Erode-*

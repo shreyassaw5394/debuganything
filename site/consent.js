@@ -8,12 +8,12 @@
   let loaded = false;
   const load = () => { if (loaded) return; loaded = true; const s = document.createElement("script"); s.defer = true; s.src = "/_vercel/insights/script.js"; document.head.appendChild(s); };
 
-  const css = `#dea-consent{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:1000;max-width:600px;margin:0 auto;background:#1a1c20;color:#ececf0;border-radius:12px;padding:18px 20px;font:14px/1.55 "Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 0 0 1px #25282d}
-#dea-consent p{margin:0 0 14px;color:#a3a7b0}#dea-consent a{color:#6cb6ff}
+  const css = `#dea-consent{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:1000;max-width:600px;margin:0 auto;background:#16242b;color:#e6eef1;border-radius:6px;padding:18px 20px;font:15px/1.5 "Erode",Georgia,serif}
+#dea-consent p{margin:0 0 14px;color:#c9d6db}#dea-consent a{color:#fff}
 #dea-consent .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-#dea-consent button{font:600 14px/1 inherit;font-family:inherit;padding:11px 18px;border-radius:8px;border:0;background:#25282d;color:#ececf0;cursor:pointer;min-width:110px}
-#dea-consent button[data-a="1"]{background:#6cb6ff;color:#06121e}
-#dea-consent button:focus-visible{outline:2px solid #6cb6ff;outline-offset:2px}
+#dea-consent button{font:600 14px/1 inherit;font-family:inherit;padding:11px 18px;border-radius:6px;border:0;background:#2a3b43;color:#e6eef1;cursor:pointer;min-width:110px;min-height:44px}
+#dea-consent button[data-a="1"]{background:#f7f9fa;color:#1f3038}
+#dea-consent button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(max-width:520px){#dea-consent button{flex:1}}`;
 
   function banner() {

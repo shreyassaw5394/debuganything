@@ -3,23 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Debug Anything: your agent can see it run</title>
-<meta name="description" content="Your AI agent can write the code. Now it can see it run. Debug Anything attaches to any running process and turns strace, py-spy, perf, lsof, tcpdump, gdb/lldb and heap snapshots into findings that cite their evidence. MCP server, CLI and Python. MIT.">
+<title>Debug Anything: every bug leaves evidence</title>
+<meta name="description" content="Debug Anything lets your AI coding agent look inside a running program (memory, CPU, threads, sockets, syscalls, containers) and cite the evidence for every finding. MCP server, CLI and Python. Open source, MIT.">
 <link rel="canonical" href="https://debuganything.dev/">
 <meta property="og:url" content="https://debuganything.dev/">
 <meta property="og:title" content="Debug Anything">
-<meta property="og:description" content="Your AI agent can write the code. Now it can see it run. Evidence, not guesses.">
-<meta property="og:image" content="https://debuganything.dev/social.png?v=4">
+<meta property="og:description" content="Every bug leaves evidence. Your AI agent can now find it in a running program, and cite it.">
+<meta property="og:image" content="https://debuganything.dev/social.png?v=5">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://debuganything.dev/social.png?v=4">
+<meta name="twitter:image" content="https://debuganything.dev/social.png?v=5">
 <link rel="icon" type="image/svg+xml" href="/logo.svg">
 <link rel="icon" type="image/png" sizes="512x512" href="/logo-512.png">
 <link rel="apple-touch-icon" href="/logo-512.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0b0c0e">
-<meta name="color-scheme" content="dark">
-<link rel="preload" href="/fonts/IBMPlexSans-var.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#f7f9fa">
+<meta name="color-scheme" content="light">
+<link rel="preload" href="/fonts/Erode-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/media/moth-1947.jpg" as="image">
 <link rel="stylesheet" href="/home.css">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Debug Anything","alternateName":"debuganything","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","url":"https://debuganything.dev","downloadUrl":"https://www.npmjs.com/package/debuganything","codeRepository":"https://github.com/shreyassaw5394/debuganything","license":"https://opensource.org/licenses/MIT","description":"Observe any running process from your AI coding agent: strace, py-spy, perf, lsof, tcpdump, gdb/lldb and heap snapshots turned into evidence-backed findings. MCP server, CLI and Python package.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"image":"https://debuganything.dev/social.png"}
@@ -29,173 +30,160 @@
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+
 <header class="nav">
-  <div class="wrap nav-row">
-    <a class="brand" href="/"><img src="/mark.svg" alt="" width="28" height="28"><span>Debug Anything</span></a>
-    <nav aria-label="Primary"><a href="#incidents">Incidents</a><a href="#how">How it works</a><a href="/analyze">Analyzer</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a></nav>
-    <a class="btn btn-sm" href="#install">Install</a>
-  </div>
+  <a class="brand" href="/"><img src="/mark.svg" alt="" width="26" height="26">Debug Anything</a>
+  <nav aria-label="Primary"><a href="#ask">Try it</a><a href="#how">How it works</a><a href="/analyze">Analyzer</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a></nav>
+  <a class="btn" href="#start">Install</a>
 </header>
 
 <main id="main">
+
 <section class="hero">
-  <div class="wrap hero-grid">
-    <div class="hero-copy">
-      <h1>Your agent writes the code. <span>Now it sees it run.</span></h1>
-      <p class="lede">When your app is slow, stuck, crashing or leaking memory, your AI agent looks inside the running program, measures what is happening and shows the evidence behind every claim. It only looks. It never changes anything.</p>
-      <div class="cmd" data-copy="npx debuganything setup"><code translate="no"><span class="p" aria-hidden="true">$</span> npx debuganything setup</code><button type="button" class="copy">Copy</button></div>
-      <p class="hero-note">Works with Claude Code, Cursor, Codex and Gemini CLI. No install? <a href="/analyze">Paste tool output into the analyzer</a>.</p>
-    </div>
-    <figure class="term" aria-label="A real Debug Anything session finding a memory leak">
-      <figcaption><span>Real session, replayed</span><button type="button" class="link-btn" id="replay-btn">Replay</button></figcaption>
-      <pre id="replay" translate="no"></pre>
-    </figure>
-  </div>
-  <div class="wrap proof">
-    <p><b>47.2 → 323.0 MB</b><span>a Node.js leak, measured in three commands</span></p>
-    <p><b>93%</b><span>of the heap traced to one array</span></p>
-    <p><b>0</b><span>changes made to your app</span></p>
+  <h1 class="sentence">Every <span class="slot"><img src="/media/moth-1947.jpg" alt="bug" width="960" height="384"></span> leaves evidence.</h1>
+  <div class="hero-foot">
+    <p class="hero-lede">Debug Anything lets your AI agent look inside a running program, measure what is wrong and cite the evidence for every finding. It only looks. It never changes anything.</p>
+    <div class="cmd" data-copy="npx debuganything setup"><code translate="no">npx debuganything setup</code><button type="button" class="btn copy">Copy</button></div>
   </div>
 </section>
 
-<section id="incidents" class="sec">
-  <div class="wrap">
-    <h2>The 3 am incidents, solved with evidence.</h2>
-    <p class="lede">Pick one. Each shows what you saw, the session that measured it, the evidence it cited and the fix.</p>
-    <div class="console">
-      <div class="console-list" role="tablist" aria-label="Incidents" id="clist"></div>
-      <div class="console-pane" role="tabpanel" id="cpane" aria-live="polite"></div>
+<section class="sec logbook" aria-labelledby="h-logbook">
+  <div class="split">
+    <div class="split-text">
+      <h2 id="h-logbook">The first bug report came with its proof.</h2>
+      <p>At 15:45 on 9 September 1947, operators of the Harvard Mark II found a moth trapped in Relay #70, Panel F. They taped it into the logbook and wrote the time beside it: <q>First actual case of bug being found.</q></p>
+      <p>Debug Anything files findings the same way. A time, a place in the running program, and the evidence attached, so your agent cannot claim what it did not see.</p>
     </div>
-  </div>
-</section>
-
-<section id="how" class="sec">
-  <div class="wrap">
-    <h2>The agent asks. Debug Anything measures.</h2>
-    <p class="lede">The agent never touches a tool directly. Debug Anything picks the right one, runs it inside hard limits, keeps the raw output on disk and returns a short result where every claim points at proof.</p>
-    <figure class="pipe">
-      <svg viewBox="0 0 1060 300" role="img" aria-label="Agent to Debug Anything to tools to evidence to finding">
-      <defs><marker id="m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6cb6ff"/></marker></defs>
-      <g id="n1"><rect class="node" x="10" y="110" width="150" height="80" rx="4"/><text class="lbl" x="85" y="145" text-anchor="middle">Agent</text><text class="sm" x="85" y="168" text-anchor="middle">"it's slow"</text></g>
-      <path class="flow" id="f1" d="M160 150 H215" marker-end="url(#m)"/>
-      <g id="n2"><rect class="node" x="220" y="95" width="170" height="110" rx="4"/><text class="lbl" x="305" y="137" text-anchor="middle">Debug Anything</text><text class="sm" x="305" y="160" text-anchor="middle">attach · cap · parse</text><text class="sm" x="305" y="180" text-anchor="middle">redact · cite</text></g>
-      <path class="flow" id="f2" d="M390 125 C430 125 430 40 470 40" marker-end="url(#m)"/>
-      <path class="flow" id="f3" d="M390 140 C430 140 430 95 470 95" marker-end="url(#m)"/>
-      <path class="flow" id="f4" d="M390 150 H470" marker-end="url(#m)"/>
-      <path class="flow" id="f5" d="M390 160 C430 160 430 205 470 205" marker-end="url(#m)"/>
-      <path class="flow" id="f6" d="M390 175 C430 175 430 260 470 260" marker-end="url(#m)"/>
-      <g id="n3">
-        <rect class="node" x="475" y="20" width="150" height="40" rx="4"/><text class="sm" x="550" y="45" text-anchor="middle">strace · syscalls</text>
-        <rect class="node" x="475" y="75" width="150" height="40" rx="4"/><text class="sm" x="550" y="100" text-anchor="middle">py-spy · perf · CPU</text>
-        <rect class="node" x="475" y="130" width="150" height="40" rx="4"/><text class="sm" x="550" y="155" text-anchor="middle">gdb · lldb · stacks</text>
-        <rect class="node" x="475" y="185" width="150" height="40" rx="4"/><text class="sm" x="550" y="210" text-anchor="middle">lsof · tcpdump · net</text>
-        <rect class="node" x="475" y="240" width="150" height="40" rx="4"/><text class="sm" x="550" y="265" text-anchor="middle">heap · docker</text>
-      </g>
-      <path class="flow" id="f7" d="M625 40 C665 40 665 150 705 150" marker-end="url(#m)"/>
-      <path class="flow" id="f8" d="M625 95 C665 95 665 150 705 150"/>
-      <path class="flow" id="f9" d="M625 150 H705"/>
-      <path class="flow" id="f10" d="M625 205 C665 205 665 150 705 150"/>
-      <path class="flow" id="f11" d="M625 260 C665 260 665 150 705 150"/>
-      <g id="n4"><rect class="node" x="710" y="105" width="150" height="90" rx="4"/><text class="lbl" x="785" y="140" text-anchor="middle">Evidence</text><text class="sm" x="785" y="162" text-anchor="middle">e1 e2 e3 → artifacts</text><text class="sm" x="785" y="180" text-anchor="middle">on disk, auditable</text></g>
-      <path class="flow" id="f12" d="M860 150 H905" marker-end="url(#m)"/>
-      <g id="n5"><rect class="node" x="910" y="95" width="140" height="110" rx="4"/><text class="lbl" x="980" y="132" text-anchor="middle">Finding</text><text class="sm" x="980" y="155" text-anchor="middle">must cite ids</text><text class="sm" x="980" y="175" text-anchor="middle">observed / inferred</text><text class="sm" x="980" y="193" text-anchor="middle">+ limitations</text></g>
-    </svg>
-      <figcaption>60 s cap per tool · 50 MB raw cap · 16 KB to the agent · read-only, no sudo, no network</figcaption>
+    <figure class="logbook-fig">
+      <img src="/media/logbook-1947.jpg" alt="A page of the Harvard Mark II logbook from 9 September 1947 with a moth taped to it and the note: First actual case of bug being found." width="1800" height="1424" loading="lazy">
+      <figcaption>Logbook of the Harvard Mark II, 1947. U.S. Naval History and Heritage Command, NH 96566-KN, public domain.</figcaption>
     </figure>
   </div>
 </section>
 
-<section class="sec light">
-  <div class="wrap">
-    <h2>No evidence, no claim.</h2>
-    <p class="lede">A finding without evidence ids is rejected before it reaches the agent. Each one says whether it was observed or inferred, and what the tools could not see.</p>
-    <ol class="chain">
-      <li><h3>Finding</h3><p><b class="sev high">HIGH</b> likely deadlock: 2 threads blocked acquiring locks, none running</p><p class="ids">inferred · e14, e1</p></li>
-      <li><h3>Evidence</h3><p><code translate="no">e14</code> lock_wait in worker_ab at app.py:38, holding lock_b</p><p><code translate="no">e1</code> stack summary: 64 threads, 0 active</p></li>
-      <li><h3>Artifact</h3><p><code translate="no">~/.debuganything/sessions/…/pyspy-dump.txt</code></p><p class="ids">Open it. The same bytes the agent saw.</p></li>
-    </ol>
+<section class="sec ask" id="ask" aria-labelledby="h-ask">
+  <h2 id="h-ask" class="ask-h">Tell it what you see.</h2>
+  <label class="sr" for="q">Describe a symptom</label>
+  <input class="ask-input" id="q" type="text" value="memory keeps growing" autocomplete="off" spellcheck="false" data-ui>
+  <div class="answer" id="answer" aria-live="polite" data-ui></div>
+  <div class="examples" role="group" aria-label="Other symptoms">
+    <button type="button" data-q="port 3000 already in use">port 3000 already in use</button>
+    <button type="button" data-q="the worker just stops">the worker just stops</button>
+    <button type="button" data-q="too many open files at 2 am">too many open files at 2 am</button>
   </div>
 </section>
 
-<section class="sec">
-  <div class="wrap">
-    <h2>What it can see in a running program.</h2>
-    <table class="tbl">
-      <thead><tr><th scope="col">Where</th><th scope="col">What it sees</th><th scope="col">Uses</th></tr></thead>
-      <tbody>
-        <tr><th scope="row">Memory</th><td>Heap snapshots, top retainers with the retaining path, growth between two runs.</td><td>Node inspector, built in</td></tr>
-        <tr><th scope="row">CPU</th><td>Flamegraphs of where time goes, for Node, Python, native, Go and Java.</td><td>py-spy, perf, sample</td></tr>
-        <tr><th scope="row">Threads</th><td>Every thread's stack, lock waits, deadlocks with file and line.</td><td>py-spy, gdb, lldb, jstack</td></tr>
-        <tr><th scope="row">Sockets and files</th><td>Who holds a port, CLOSE_WAIT pile-ups, descriptor growth, deleted-but-open files.</td><td>lsof, no root</td></tr>
-        <tr><th scope="row">Syscalls</th><td>Slowest calls with paths, error counts, how much time is spent blocked.</td><td>strace</td></tr>
-        <tr><th scope="row">Network</th><td>Bytes per remote, resets, retransmits, DNS. Asks before every capture.</td><td>tcpdump</td></tr>
-        <tr><th scope="row">Containers</th><td>OOM kills, exit codes, restarts, limits against usage, log tail.</td><td>docker, kubectl debug</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<section id="install" class="sec">
-  <div class="wrap">
-    <h2>One line, any agent.</h2>
-    <div class="tabs" data-tabs>
-      <div class="tablist" role="tablist" aria-label="Install">
-        <button role="tab" aria-selected="true" aria-controls="i-agent" id="t-agent" type="button">Your agent</button>
-        <button role="tab" aria-selected="false" aria-controls="i-team" id="t-team" type="button" tabindex="-1">Your team</button>
-        <button role="tab" aria-selected="false" aria-controls="i-cli" id="t-cli" type="button" tabindex="-1">No agent</button>
-        <button role="tab" aria-selected="false" aria-controls="i-py" id="t-py" type="button" tabindex="-1">Python</button>
+<section class="sec how" id="how" aria-labelledby="h-how">
+  <div class="how-fields">
+    <div class="how-left">
+      <h2 id="h-how" class="sr">How it works</h2>
+      <p class="clause" id="clause" aria-live="polite">First, it attaches to the process.</p>
+      <p class="clause-note" id="clause-note">By pid, container, pod or a command it starts for you. Nothing is installed in your app.</p>
+    </div>
+    <div class="how-right" data-ui>
+      <div class="frag" data-stage="0">
+<pre translate="no"><span class="t-cmd">$ debuganything attach 34327</span>
+<span class="t-ok">attached</span>  node server.js (pid 34327)
+session   s_7f3c2a
+tools     heap · cpu · stacks · sockets · files
+limits    60 s per tool · 50 MB raw · 16 KB to agent</pre>
       </div>
-      <div class="tabpanel" role="tabpanel" id="i-agent" aria-labelledby="t-agent"><div class="cmd" data-copy="npx debuganything setup"><code translate="no"><span class="p" aria-hidden="true">$</span> npx debuganything setup</code><button type="button" class="copy">Copy</button></div><p>Registers the MCP server and both skills with Claude Code, Cursor, Codex and Gemini CLI.</p></div>
-      <div class="tabpanel" role="tabpanel" id="i-team" aria-labelledby="t-team" hidden><div class="cmd" data-copy="debuganything init"><code translate="no"><span class="p" aria-hidden="true">$</span> debuganything init</code><button type="button" class="copy">Copy</button></div><p>Commits the agent config and a rule for when to look, so every teammate's agent has it.</p></div>
-      <div class="tabpanel" role="tabpanel" id="i-cli" aria-labelledby="t-cli" hidden><div class="cmd" data-copy="npx debuganything why 12345 --symptom slow"><code translate="no"><span class="p" aria-hidden="true">$</span> npx debuganything why 12345 --symptom slow</code><button type="button" class="copy">Copy</button></div><p>Attaches, runs the right tools for the symptom, writes a report and detaches.</p></div>
-      <div class="tabpanel" role="tabpanel" id="i-py" aria-labelledby="t-py" hidden><div class="cmd" data-copy="pip install debuganything"><code translate="no"><span class="p" aria-hidden="true">$</span> pip install debuganything</code><button type="button" class="copy">Copy</button></div><p>For LangChain, LlamaIndex, CrewAI or your own on-call agent.</p></div>
+      <div class="frag" data-stage="1" hidden>
+        <video src="/media/leak-session.mp4" poster="/media/leak-session-poster.jpg" width="1200" height="750" muted loop playsinline preload="none" aria-label="Recording of a real session taking two heap snapshots of a leaking Node.js server"></video>
+        <button type="button" class="vid-toggle" aria-pressed="false">Pause</button>
+      </div>
+      <div class="frag" data-stage="2" hidden>
+<pre translate="no"><span class="t-high">HIGH</span>  Array grew 2.0 KB → 87.7 MB
+      retained by Context.retained
+      <span class="t-ev">observed · diff_runs#6/e4</span>
+<span class="t-warn">WARN</span>  rss grew 47.2 MB → 323.0 MB (+584%)
+      <span class="t-ev">observed · diff_runs#6/e1</span>
+<span class="t-ev">limits: sampled heap; native memory not traced</span></pre>
+      </div>
+      <div class="frag" data-stage="3" hidden>
+        <img src="/media/report-findings.jpg" alt="The report Debug Anything writes: findings with severity, evidence ids and the commands that produced them." width="1400" height="968" loading="lazy">
+      </div>
     </div>
   </div>
-</section>
-
-<section class="sec">
-  <div class="wrap">
-    <h2>It only looks.</h2>
-    <dl class="facts">
-      <div><dt>Read-only</dt><dd>Never kills, signals, patches or sets breakpoints.</dd></div>
-      <div><dt>No sudo, ever</dt><dd>Needs root? You get the exact command to run yourself.</dd></div>
-      <div><dt>Hard limits</dt><dd>60 s per tool, 50 MB raw output, 16 KB to the agent.</dd></div>
-      <div><dt>Asks first</dt><dd>Packet capture needs an explicit yes, every time.</dd></div>
-      <div><dt>Redacted</dt><dd>Tokens, keys and passwords scrubbed from what the agent sees.</dd></div>
-      <div><dt>Local only</dt><dd>No cloud, no telemetry, no update checks.</dd></div>
-    </dl>
-    <p class="fine">Only observe systems you own or are allowed to debug. <a href="docs/safety.md">Safety details</a>.</p>
+  <div class="stages">
+    <label class="sr" for="stage">Stage</label>
+    <div class="track-wrap"><span class="track-fill" id="track-fill"></span><input type="range" id="stage" min="0" max="3" step="1" value="0" aria-valuetext="Attach"></div>
+    <ol class="stage-names" aria-hidden="true"><li class="on">Attach</li><li>Observe</li><li>Cite</li><li>Report</li></ol>
   </div>
 </section>
 
-<section class="sec">
-  <div class="wrap faq">
-    <h2>Questions.</h2>
-    <div class="faq-list">
-      <details name="faq"><summary>Does it need root?<span class="pm" aria-hidden="true"></span></summary><p>Most tools don't. When one does, it prints the exact command for you to run, then reads the file with <code translate="no">debuganything import</code>.</p></details>
-      <details name="faq"><summary>Which agents does it work with?<span class="pm" aria-hidden="true"></span></summary><p>Claude Code, Cursor, Codex, Gemini CLI and anything that speaks MCP. There is also a Claude Code plugin and a Gemini extension.</p></details>
-      <details name="faq"><summary>What are the two skills?<span class="pm" aria-hidden="true"></span></summary><p><b>debug-anything</b> tells your agent when to look: a hang, a busy port, an out-of-memory kill. <b>inspect-product</b> audits a whole product as a new user and reports findings with reproductions.</p></details>
-      <details name="faq"><summary>Can CI use it?<span class="pm" aria-hidden="true"></span></summary><p>Yes. Fail a job when memory grows between two snapshots, or use the <a href="https://github.com/shreyassaw5394/debuganything-action">GitHub Action</a>, which attaches before a hung test is killed.</p></details>
-      <details name="faq"><summary>How sure are the findings?<span class="pm" aria-hidden="true"></span></summary><p>Each one says whether it was observed or inferred and lists what the tools could not see. They are automated diagnostics, not professional advice. Read the evidence before you act.</p></details>
+<section class="sec works" aria-labelledby="h-works">
+  <div class="works-grid">
+  <p class="names"><span id="h-works" class="names-lead">It works with</span> <span class="n">Claude Code</span>, <span class="n">Cursor</span>, <span class="n">Codex</span>, <span class="n">Gemini CLI</span>, <span class="n">LangChain</span>, <span class="n">LlamaIndex</span>, <span class="n">CrewAI</span> and <span class="n">your own on-call agent</span>.</p>
+  <div class="works-side">
+    <div class="cmd" data-copy="npx debuganything setup"><code translate="no">npx debuganything setup</code><button type="button" class="btn copy">Copy</button></div>
+    <p>One command registers the MCP server and both skills with each of them. For Python agents, <code translate="no">pip install debuganything</code>.</p>
+  </div>
+  </div>
+</section>
+
+<section class="sees" aria-labelledby="h-sees">
+  <h2 id="h-sees" class="sr">What it can see</h2>
+  <div class="band" data-tone="1">
+    <h3>It sees what holds your memory.</h3>
+    <button type="button" class="sw" role="switch" aria-checked="true" aria-label="Show evidence: memory"></button>
+    <p class="band-ev">Array retains 87.7 MB, 93% of the heap. <span class="ev-k">Evidence</span> <code translate="no">snapshot_memory#5/e5</code></p>
+  </div>
+  <div class="band" data-tone="2">
+    <h3>It sees where the CPU time goes.</h3>
+    <button type="button" class="sw" role="switch" aria-checked="false" aria-label="Show evidence: CPU"></button>
+    <p class="band-ev">One frame takes 58.3% of CPU work: a file read on every request. <span class="ev-k">Evidence</span> <code translate="no">profile_cpu#1/e2</code></p>
+  </div>
+  <div class="band" data-tone="3">
+    <h3>It sees which threads are stuck.</h3>
+    <button type="button" class="sw" role="switch" aria-checked="true" aria-label="Show evidence: threads"></button>
+    <p class="band-ev">worker_ab holds lock_b, worker_ba holds lock_a. Neither runs. <span class="ev-k">Evidence</span> <code translate="no">dump_stacks#1/e14</code></p>
+  </div>
+  <div class="band" data-tone="4">
+    <h3>It sees who holds the port.</h3>
+    <button type="button" class="sw" role="switch" aria-checked="false" aria-label="Show evidence: ports"></button>
+    <p class="band-ev">Port 3000 is held by pid 61326 (node), left over from the last run. <span class="ev-k">Evidence</span> <code translate="no">inspect_sockets#1/e1</code></p>
+  </div>
+  <div class="band" data-tone="5">
+    <h3>It sees the sockets nobody closed.</h3>
+    <button type="button" class="sw" role="switch" aria-checked="false" aria-label="Show evidence: sockets"></button>
+    <p class="band-ev">412 sockets in CLOSE_WAIT: the peer hung up, the app never did. <span class="ev-k">Evidence</span> <code translate="no">inspect_sockets#2/e2</code></p>
+  </div>
+</section>
+
+<section class="sec faq" aria-labelledby="h-faq">
+  <div class="qa"><h2 id="h-faq" class="q soft">Questions</h2><div></div></div>
+  <div class="qa"><h3 class="q">Does it change my app?</h3><p>No. It never kills, signals, patches or sets breakpoints. Packet capture asks for an explicit yes every time, and secrets are scrubbed from what the agent sees.</p></div>
+  <div class="qa"><h3 class="q">Does it need root?</h3><p>Most tools don't. When one does, it prints the exact command for you to run, then reads the file with <code translate="no">debuganything import</code>. It never uses sudo itself.</p></div>
+  <div class="qa"><h3 class="q">Does anything leave my machine?</h3><p>No. No cloud, no telemetry, no update checks. Raw output stays on your disk under <code translate="no">~/.debuganything</code>.</p></div>
+  <div class="qa"><h3 class="q">How sure are the findings?</h3><p>Each one says whether it was observed or inferred, and what the tools could not see. They are automated diagnostics, not professional advice. Read the evidence before you act.</p></div>
+  <div class="qa"><h3 class="q">No AI agent?</h3><p>Run <code translate="no">debuganything why &lt;pid&gt;</code> yourself, install the Python package with <code translate="no">pip install debuganything</code>, or paste tool output into the <a href="/analyze">analyzer</a>.</p></div>
+</section>
+
+<section class="start" id="start" aria-labelledby="h-start">
+  <h2 id="h-start" class="start-h"><span>Ready to ask</span> <span>it why?</span></h2>
+  <div class="start-mid">
+    <div class="start-row">
+      <button type="button" class="btn btn-light" data-copy-cmd="npx debuganything setup">Copy the install</button>
+      <span class="or">or</span>
+      <a class="btn btn-light" href="/analyze">Open the analyzer</a>
     </div>
-  </div>
-</section>
-
-<section class="sec end">
-  <div class="wrap">
-    <h2>Ask it why.</h2>
-    <div class="cmd" data-copy="npx debuganything setup"><code translate="no"><span class="p" aria-hidden="true">$</span> npx debuganything setup</code><button type="button" class="copy">Copy</button></div>
-    <p class="stats"><span><b id="st-stars">–</b> GitHub stars</span><span><b id="st-npm">–</b> npm downloads, 30 days</span><span><b id="st-pypi">–</b> PyPI downloads, 30 days</span><span><b id="st-contrib">–</b> contributors</span></p>
+    <p class="start-note"><code translate="no">npx debuganything setup</code> registers it with Claude Code, Cursor, Codex and Gemini CLI. The analyzer runs in your browser.</p>
   </div>
 </section>
 <p class="sr" id="live" role="status" aria-live="polite"></p>
 </main>
 
 <footer class="foot">
-  <div class="wrap foot-grid">
-    <p class="brand"><img src="/mark.svg" alt="" width="22" height="22"><span>Debug Anything</span></p>
-    <nav aria-label="Footer"><a href="docs/README.md">Docs</a><a href="/analyze">Analyzer</a><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://www.npmjs.com/package/debuganything">npm</a><a href="https://pypi.org/project/debuganything/">PyPI</a><a href="https://discord.gg/htPuQ5grg">Discord</a><a href="/privacy">Privacy</a><a href="/fonts/OFL-IBMPlexSans.txt">Font licence</a><a href="#" data-cookie-settings>Cookie settings</a></nav>
-    <p class="fine">An independent, open-source project, MIT licensed. Provided “as is”, without warranty; the authors accept no liability for damage arising from use. Only observe systems you own or are explicitly authorized to debug. Findings are automated diagnostics, not professional advice. Unaffiliated with any employer or with the third-party tools it runs. <a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Full disclaimer</a>.</p>
+  <div class="foot-top">
+    <p><img src="/mark-light.svg" alt="" width="22" height="22"> Debug Anything. Open source, MIT. <span id="stats"></span></p>
+    <a href="#main">Back to top</a>
+  </div>
+  <a class="foot-big" href="https://github.com/shreyassaw5394/debuganything/issues">Report a bug.</a>
+  <div class="foot-meta">
+    <nav aria-label="Footer"><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://www.npmjs.com/package/debuganything">npm</a><a href="https://pypi.org/project/debuganything/">PyPI</a><a href="https://discord.gg/htPuQ5grg">Discord</a><a href="/privacy">Privacy</a><a href="#" data-cookie-settings>Cookie settings</a></nav>
+    <p>Provided “as is”, without warranty. Only observe systems you own or are authorized to debug. Findings are automated diagnostics, not professional advice. Unaffiliated with the companies and tools named here. <a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Disclaimer</a>.</p>
+    <p>Photographs: logbook, U.S. Naval History and Heritage Command (public domain). Type: Erode by Indian Type Foundry.</p>
   </div>
 </footer>
 </body>
