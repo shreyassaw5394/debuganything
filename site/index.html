@@ -18,6 +18,7 @@
 <link rel="icon" type="image/png" sizes="512x512" href="logo-512.png">
 <link rel="apple-touch-icon" href="logo-512.png">
 <link rel="manifest" href="site.webmanifest">
+<link rel="preload" href="/fonts/IBMPlexSans-var.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#0b0d12">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Debug Anything","alternateName":"debuganything","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","url":"https://debuganything.dev","downloadUrl":"https://www.npmjs.com/package/debuganything","codeRepository":"https://github.com/shreyassaw5394/debuganything","license":"https://opensource.org/licenses/MIT","description":"Observe any running process from your AI coding agent: strace, py-spy, perf, lsof, tcpdump, gdb/lldb and heap snapshots turned into evidence-backed findings. MCP server, CLI and Python package.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"image":"https://debuganything.dev/social.png"}
@@ -39,7 +40,13 @@ nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;backdrop-filter:
 nav .wrap{display:flex;align-items:center;gap:18px;height:60px}
 nav .brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--fg)}nav .brand img{width:30px;height:30px;border-radius:8px}
 nav .links{margin-left:auto;display:flex;gap:18px;font-size:14px;color:var(--muted)}nav .links a{color:var(--muted)}nav .links a:hover{color:var(--fg);text-decoration:none}
-@media(max-width:720px){nav .links a:nth-child(n+4){display:none}}
+@media(max-width:720px){nav .links a:nth-child(n+3){display:none}}
+nav .brand,nav .links a{white-space:nowrap}
+footer .links{flex-wrap:wrap;row-gap:8px}
+.inst,.tiles{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))}
+.inst pre,.inst code,.tl code,.console pre{overflow-wrap:anywhere}
+.inst .box{min-width:0}
+@media(max-width:420px){nav .links a:nth-child(n+2){display:none}}
 /* hero */
 .hero{padding:88px 0 56px;position:relative}
 .hero::before{content:"";position:absolute;inset:-200px 0 auto;height:620px;background:radial-gradient(600px 300px at 30% 20%,rgba(124,196,255,.14),transparent 70%),radial-gradient(500px 260px at 75% 10%,rgba(255,184,107,.10),transparent 70%);pointer-events:none}
@@ -80,7 +87,7 @@ h1 span{background:linear-gradient(90deg,#9ad4ff,#5aa9f0);-webkit-background-cli
 .video video{width:100%;display:block}
 /* incident console */
 .console{display:grid;grid-template-columns:300px 1fr;gap:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);margin-top:36px;min-height:460px}
-@media(max-width:860px){.console{grid-template-columns:1fr}}
+@media(max-width:860px){.console{grid-template-columns:minmax(0,1fr)}.console .list{min-width:0}}
 .console .list{border-right:1px solid var(--line);background:#0e1119}
 @media(max-width:860px){.console .list{border-right:0;border-bottom:1px solid var(--line);display:flex;overflow-x:auto}}
 .console .item{display:flex;gap:12px;align-items:center;padding:14px 16px;cursor:pointer;color:var(--muted);border-left:3px solid transparent;transition:all .25s;white-space:nowrap}
@@ -154,17 +161,37 @@ a.tile{display:block;color:inherit}a.tile:hover{text-decoration:none}
 .wall a:hover{border-color:var(--acc);transform:translateY(-2px);text-decoration:none}
 .wall img{width:32px;height:32px;border-radius:50%}
 .wall small{color:var(--dim);margin-left:4px}
+
+/* restyle: one characterful face, no glows, no gradient text, no fake window chrome, no emoji icons */
+@font-face{font-family:"Plex Sans";src:url(/fonts/IBMPlexSans-var.woff2) format("woff2");font-weight:100 700;font-display:swap}
+body{font-family:"Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+h1{font-weight:600;letter-spacing:-.03em}
+h1 span{background:none;-webkit-background-clip:initial;background-clip:initial;color:var(--acc)}
+.hero::before{display:none}
+.cmd{box-shadow:none}.cmd:hover{box-shadow:none;border-color:#2b3347}
+.term{box-shadow:none}
+.term .bar i{display:none}
+.term .bar span{margin-left:0}
+.video{box-shadow:none}
+.pipe .node.lit{filter:none}
+.chain .box:hover,.chain .box.lit{box-shadow:none}
+.rule{border-left:0;border-radius:10px}
+.toast{border-left:0;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.console .item .ic{display:none}
+.console .item.on{border-left-color:var(--acc2)}
+.tl::before{background:var(--line);opacity:1}
+.tile:hover{transform:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <nav><div class="wrap">
   <a class="brand" href="#"><img src="logo.svg" alt="">Debug Anything</a>
-  <div class="links"><a href="analyze" style="color:var(--acc)">Analyzer</a><a href="#how">How it works</a><a href="#real">Real-world</a><a href="#workflow">Workflow</a><a href="#new">What's new</a><a href="#skills">Skills</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://discord.gg/htPuQ5grg">Discord</a></div>
+  <div class="links"><a href="analyze">Analyzer</a><a href="#how">How it works</a><a href="#real">Incidents</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a></div>
 </div></nav>
 
 <section class="hero"><div class="wrap">
   <div>
-    <div class="eyebrow">Debug Anything · open source · MIT</div>
     <h1>Your AI agent can write the code.<br><span>Now it can see it run.</span></h1>
     <p class="sub">When your app is slow, stuck, crashing or eating memory, your AI agent used to read the code and guess. With Debug Anything it looks inside the <em>running</em> app, measures what is actually happening, and shows you the proof. One command to install. No terminal skills needed.</p>
     <div class="cmd"><span class="p">$</span><span id="cmd">npx debuganything why <em style="font-style:normal;color:var(--dim)">&lt;pid&gt;</em></span><button onclick="navigator.clipboard&&navigator.clipboard.writeText('npx debuganything why ');this.textContent='copied — add your pid'">copy</button></div>
@@ -177,18 +204,16 @@ a.tile{display:block;color:inherit}a.tile:hover{text-decoration:none}
 
 
 <section id="plain" style="padding-top:20px"><div class="wrap">
-  <div class="eyebrow">In plain English</div>
   <h2>You say what's wrong. Your agent goes and looks.</h2>
   <div class="tiles reveal" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
-    <div class="tile"><div style="font-size:34px;margin-bottom:8px">🗣️</div><h3>1. You say it, however you say it</h3><p>“It's slow after a while.” “It just freezes.” “Memory keeps going up.” “Port already in use.” “The container keeps dying.”</p></div>
-    <div class="tile"><div style="font-size:34px;margin-bottom:8px">🔍</div><h3>2. The agent looks inside the running app</h3><p>Not the code on screen, the program actually running. Debug Anything uses the same tools senior engineers use, drives them for the agent, and keeps it safe: it only watches, never changes anything.</p></div>
-    <div class="tile"><div style="font-size:34px;margin-bottom:8px">🧾</div><h3>3. You get the cause, with a receipt</h3><p>“This list grows and is never emptied.” “This function uses 58% of the CPU.” “Two threads are waiting on each other.” Every sentence points at the measurement behind it, so it can't make things up.</p></div>
+    <div class="tile"><h3>You say it, however you say it</h3><p>“It's slow after a while.” “It just freezes.” “Memory keeps going up.” “Port already in use.” “The container keeps dying.”</p></div>
+    <div class="tile"><h3>The agent looks inside the running app</h3><p>Not the code on screen, the program actually running. Debug Anything uses the same tools senior engineers use, drives them for the agent, and keeps it safe: it only watches, never changes anything.</p></div>
+    <div class="tile"><h3>You get the cause, with a receipt</h3><p>“This list grows and is never emptied.” “This function uses 58% of the CPU.” “Two threads are waiting on each other.” Every sentence points at the measurement behind it, so it can't make things up.</p></div>
   </div>
   <p class="meta" style="margin-top:18px">Then it fixes the code the way it already can, measures again, and shows the before/after. That is the whole loop.</p>
 </div></section>
 
 <section id="how"><div class="wrap">
-  <div class="eyebrow">How it sees</div>
   <h2>The agent asks. Debug Anything measures. Every claim points at proof.</h2>
   <p class="sub">The agent never touches a tool directly. Debug Anything picks the right one, runs it inside hard limits, keeps the raw output as an artifact, and returns a short structured result.</p>
   <div class="pipe reveal">
@@ -218,19 +243,17 @@ a.tile{display:block;color:inherit}a.tile:hover{text-decoration:none}
       <path class="flow" id="f12" d="M860 150 H905" marker-end="url(#m)"/>
       <g id="n5"><rect class="node" x="910" y="95" width="140" height="110" rx="14"/><text class="lbl" x="980" y="132" text-anchor="middle">Finding</text><text class="sm" x="980" y="155" text-anchor="middle">must cite ids</text><text class="sm" x="980" y="175" text-anchor="middle">observed / inferred</text><text class="sm" x="980" y="193" text-anchor="middle">+ limitations</text></g>
     </svg>
-    <div class="legend"><span>⏱ 60 s cap per tool</span><span>📦 50 MB raw cap</span><span>📨 16 KB to the agent</span><span>🔒 read-only, no sudo, no network</span></div>
+    <div class="legend"><span>60 s cap per tool</span><span>50 MB raw cap</span><span>16 KB to the agent</span><span>read-only, no sudo, no network</span></div>
   </div>
 </div></section>
 
 <section id="video"><div class="wrap">
-  <div class="eyebrow">40 seconds</div>
   <h2>A memory leak, found and named.</h2>
   <p class="sub">Two snapshots, a diff, and the retainer: <code>Array retains 50 MB via Context.retained</code>, the module-level array in <code>server.js</code>. Real output, no edits.</p>
   <div class="video reveal" style="margin-top:32px"><video src="docs/demo.mp4" poster="social.png" autoplay muted loop playsinline controls></video></div>
 </div></section>
 
 <section id="real"><div class="wrap">
-  <div class="eyebrow">Real-world situations</div>
   <h2>The 3 am incidents, with the session that solves each.</h2>
   <p class="sub">Numbers from our own reproductions are real; the rest show the shape of the evidence. Every finding carries its evidence ids.</p>
   <div class="console reveal" id="console">
@@ -241,7 +264,6 @@ a.tile{display:block;color:inherit}a.tile:hover{text-decoration:none}
 </div></section>
 
 <section id="evidence"><div class="wrap">
-  <div class="eyebrow">The rule</div>
   <h2>No evidence, no claim.</h2>
   <p class="sub">A finding without evidence ids is rejected by the schema before it ever reaches the agent. Hover the chain.</p>
   <div class="chain reveal" id="chain">
@@ -259,7 +281,6 @@ open it. same bytes the agent saw.</pre></div>
 </div></section>
 
 <section id="workflow"><div class="wrap">
-  <div class="eyebrow">Workflow</div>
   <h2>From one laptop to the whole team in a week.</h2>
   <p class="sub">One command per developer, one command per repo, evidence in pull requests, a gate in CI. Nothing to host.</p>
   <div class="tl" id="tl">
@@ -274,7 +295,6 @@ open it. same bytes the agent saw.</pre></div>
 </div></section>
 
 <section id="proactive"><div class="wrap">
-  <div class="eyebrow">Unprompted</div>
   <h2>You stop asking. The agent goes to look.</h2>
   <div class="pro">
     <div class="term reveal" style="position:relative;min-height:300px"><div class="bar"><i></i><i></i><i></i><span>claude code</span></div><pre id="pro-term" style="min-height:250px"></pre><div class="toast" id="toast"><b>[Debug Anything]</b> The last command's output shows a runtime problem signal. <br>port_busy (“EADDRINUSE :::3000”): run <code>debuganything port 3000</code>; never kill it blindly.</div></div>
@@ -287,7 +307,6 @@ open it. same bytes the agent saw.</pre></div>
 </div></section>
 
 <section id="observe"><div class="wrap">
-  <div class="eyebrow">What you can observe</div>
   <h2>The tools SREs trust. Driven by the agent.</h2>
   <div class="tiles reveal">
     <div class="tile"><h3>Sockets &amp; files</h3><p>Listening ports, connections by remote, CLOSE_WAIT pileups, fd growth, deleted-but-open files.</p><div class="req">lsof · Linux, macOS · no root</div></div>
@@ -303,8 +322,7 @@ open it. same bytes the agent saw.</pre></div>
 </div></section>
 
 <section id="new"><div class="wrap">
-  <div class="eyebrow">What's new</div>
-  <h2>October 2026</h2>
+  <h2>New in October 2026.</h2>
   <div class="inst reveal" style="margin-top:20px">
     <div class="box">
       <h3>The <code>inspect-product</code> skill <span style="color:#7cc4ff;font-size:13px">new</span></h3>
@@ -334,7 +352,6 @@ open it. same bytes the agent saw.</pre></div>
 </div></section>
 
 <section id="skills"><div class="wrap">
-  <div class="eyebrow">Two skills, one install</div>
   <h2>Your agent knows <em>when</em> to look, not just how.</h2>
   <p class="sub">Skills are standing instructions your agent reads on its own. Debug Anything ships two, and <code>npx debuganything setup</code> installs both.</p>
   <div class="inst reveal" style="margin-top:22px">
@@ -357,7 +374,6 @@ open it. same bytes the agent saw.</pre></div>
 </div></section>
 
 <section id="install"><div class="wrap">
-  <div class="eyebrow">Everywhere your agent is</div>
   <h2>One line, any agent.</h2>
   <div class="inst reveal">
     <div class="box"><h3>MCP · Claude Code, Cursor, Codex, Gemini CLI</h3><pre><b>npx</b> debuganything setup</pre></div>
@@ -376,7 +392,6 @@ gemini extensions install https://github.com/shreyassaw5394/debuganything</pre><
 </div></section>
 
 <section id="safety" style="padding-top:40px"><div class="wrap">
-  <div class="eyebrow">Safety</div>
   <h2>It only looks.</h2>
   <div class="safe">
     <div><b>Read-only</b>Never kills, signals, patches or sets breakpoints.</div>
@@ -391,7 +406,6 @@ gemini extensions install https://github.com/shreyassaw5394/debuganything</pre><
 
 
 <section id="community" style="padding-top:40px"><div class="wrap">
-  <div class="eyebrow">Community</div>
   <h2>Built in the open. Numbers live.</h2>
   <div class="tiles reveal" id="stats" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
     <a class="tile" href="https://github.com/shreyassaw5394/debuganything/stargazers"><div class="num" id="st-stars">—</div><p>GitHub stars</p></a>
@@ -399,7 +413,7 @@ gemini extensions install https://github.com/shreyassaw5394/debuganything</pre><
     <a class="tile" href="https://www.npmjs.com/package/debuganything"><div class="num" id="st-npm">—</div><p>npm downloads · 30 days</p></a>
     <a class="tile" href="https://pypi.org/project/debuganything/"><div class="num" id="st-pypi">—</div><p>PyPI downloads · 30 days</p></a>
     <a class="tile" href="https://github.com/shreyassaw5394/debuganything/graphs/contributors"><div class="num" id="st-contrib">—</div><p>Contributors</p></a>
-    <a class="tile" href="https://discord.gg/htPuQ5grg"><div class="num">💬</div><p>Discord</p></a>
+    <a class="tile" href="https://discord.gg/htPuQ5grg"><div class="num">Chat</div><p>Discord</p></a>
   </div>
   <h3 style="margin-top:36px;font-size:18px">Top contributors</h3>
   <p class="meta" style="margin-top:6px">Land a pull request (an adapter, a fixture, a doc) and you appear here automatically.</p>
@@ -408,7 +422,7 @@ gemini extensions install https://github.com/shreyassaw5394/debuganything</pre><
 
 <footer><div class="wrap">
   <img src="logo.svg" alt="" width="28" height="28" style="border-radius:8px"><span>Debug Anything · MIT</span>
-  <div class="links"><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://www.npmjs.com/package/debuganything">npm</a><a href="https://pypi.org/project/debuganything/">PyPI</a><a href="https://discord.gg/htPuQ5grg">Discord</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Disclaimer</a><a href="/privacy">Privacy</a><a href="#" data-cookie-settings>Cookie settings</a></div>
+  <div class="links"><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://www.npmjs.com/package/debuganything">npm</a><a href="https://pypi.org/project/debuganything/">PyPI</a><a href="https://discord.gg/htPuQ5grg">Discord</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Disclaimer</a><a href="/privacy">Privacy</a><a href="/fonts/OFL-IBMPlexSans.txt">Font licence</a><a href="#" data-cookie-settings>Cookie settings</a></div>
 </div>
 <div class="wrap" style="margin-top:14px;font-size:12.5px;line-height:1.6">Provided "as is", without warranty of any kind; the authors accept no liability for any damage arising from use. Only observe systems you own or are explicitly authorized to debug — you are solely responsible for authorization and legal compliance. Findings are automated diagnostics, not professional advice. An independent open-source project by individual contributors, unaffiliated with any employer or with the third-party tools it orchestrates. <a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Full disclaimer</a>.</div></footer>
 
