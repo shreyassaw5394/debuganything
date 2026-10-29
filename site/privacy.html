@@ -14,6 +14,28 @@ main{max-width:760px;margin:0 auto;padding:56px 20px 80px}h1{font-size:34px;marg
 p,li{color:var(--muted)}a{color:var(--acc)}strong{color:var(--fg)}code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:#151a28;padding:1px 6px;border-radius:5px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px}.top a{text-decoration:none;color:var(--fg);font-weight:600}
 button{font:600 14px system-ui,sans-serif;padding:8px 16px;border-radius:999px;border:1px solid #3a4258;background:transparent;color:var(--fg);cursor:pointer}
+
+/* Brutalism + Minimalism, matching the home page */
+@font-face{font-family:"Plex Sans";src:url(/fonts/IBMPlexSans-var.woff2) format("woff2");font-weight:100 700;font-display:swap}
+:root{--bg:#f4f4f2;--bg2:#e9e9e6;--fg:#111111;--muted:#4a4a46;--dim:#5c5b55;--acc:#0039d6;--acc2:#111;--ok:#1d7a3a;--warn:#8a4b0c;--high:#c4141a;--card:#ffffff;--line:#111111;color-scheme:light}
+body{background:var(--bg)!important;color:var(--fg)!important;font-family:"Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+h1,h2,h3{color:#111;font-weight:800;letter-spacing:-.03em}
+h1 span{background:#ffd400!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:#111!important;padding:0 .1em}
+a{color:var(--acc)}
+nav{background:var(--bg)!important;backdrop-filter:none!important;border-bottom:2px solid #111!important}
+nav a,nav .brand{color:#111!important}
+textarea,select,input{background:#fff!important;color:#111!important;border:2px solid #111!important;border-radius:0!important}
+button,.btn{border-radius:0!important}
+button.primary,#go{background:#ffd400!important;color:#111!important;border:2px solid #111!important;box-shadow:4px 4px 0 #111}
+.samples button{background:#fff!important;color:#111!important;border:2px solid #111!important}
+.card,.box,.panel,.out,#out,#cta,.cta,table{border-radius:0!important}
+.card,.box,.panel,#out,#cta{background:#fff!important;border:2px solid #111!important;box-shadow:6px 6px 0 #111;color:#111}
+pre,code{color:inherit}
+pre{background:#111!important;color:#f4f4f2!important;border-radius:0!important}
+th,td{border-color:#111!important}
+footer{border-top:2px solid #111!important;color:var(--muted)!important}
+:not(pre)>code{background:#e3e3df!important;color:#111!important;border-radius:0!important;border:0!important}
+.finding,.f,[class*=finding]{border-radius:0!important}
 </style>
 </head>
 <body>

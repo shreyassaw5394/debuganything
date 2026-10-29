@@ -19,7 +19,7 @@
 <link rel="apple-touch-icon" href="logo-512.png">
 <link rel="manifest" href="site.webmanifest">
 <link rel="preload" href="/fonts/IBMPlexSans-var.woff2" as="font" type="font/woff2" crossorigin>
-<meta name="theme-color" content="#0b0d12">
+<meta name="theme-color" content="#f4f4f2">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Debug Anything","alternateName":"debuganything","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","url":"https://debuganything.dev","downloadUrl":"https://www.npmjs.com/package/debuganything","codeRepository":"https://github.com/shreyassaw5394/debuganything","license":"https://opensource.org/licenses/MIT","description":"Observe any running process from your AI coding agent: strace, py-spy, perf, lsof, tcpdump, gdb/lldb and heap snapshots turned into evidence-backed findings. MCP server, CLI and Python package.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"image":"https://debuganything.dev/social.png"}
 </script>
@@ -250,6 +250,80 @@ dl.news dd{margin:0;color:#b4bcc8;max-width:44ch}
 .console .tag{font:600 13px/1.2 "Plex Sans",sans-serif;letter-spacing:0;text-transform:none;color:var(--dim)}
 @media(max-width:900px){.steps3,dl.news,dl.news.two{grid-template-columns:minmax(0,1fr)}table.ed tbody th{width:auto}}
 @media(max-width:640px){table.ed,table.ed tbody,table.ed tr,table.ed th,table.ed td{display:block;width:auto}table.ed thead{display:none}table.ed tr{border-top:1px solid var(--line);padding:12px 0}table.ed th,table.ed td{border:0!important;padding:2px 0}}
+
+/* ===== Style: Brutalism + Minimalism (ui-style-picker). Paper ground, black ink, raw black output blocks, square edges, hard shadows. ===== */
+:root{--bg:#f4f4f2;--bg2:#e9e9e6;--fg:#111111;--muted:#4a4a46;--dim:#5c5b55;--acc:#0039d6;--acc2:#111111;--card:#ffffff;--card2:#ffffff;--line:#111111;--ink:#111111;--paper:#f4f4f2;--yel:#ffd400;--hard:6px 6px 0 #111;color-scheme:light}
+body{background:var(--bg);color:var(--fg)}
+::selection{background:var(--yel);color:#111}
+a{color:var(--acc)}
+h1,h2,h3{color:var(--fg)}
+h1{font-weight:800;letter-spacing:-.04em}
+h2{font-weight:800;letter-spacing:-.035em}
+h1 span{color:#111!important;background:var(--yel)!important;padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.sub,.steps3 p,dl.news dd,table.ed td,.signal-line,.proof-strip p,.leak-grid figcaption{color:var(--muted)}
+.meta{color:var(--dim)}
+/* nav */
+nav{background:var(--bg);backdrop-filter:none;border-bottom:2px solid #111}
+nav .brand{color:#111}
+nav .links a{color:#111!important;font-weight:500}
+nav .links a:hover{background:var(--yel);text-decoration:none}
+/* buttons and command */
+.btn{border:2px solid #111!important;border-radius:0!important;background:#fff!important;color:#111!important;box-shadow:var(--hard);transition:transform 80ms,box-shadow 80ms}
+.btn.primary{background:var(--yel)!important}
+.btn:hover{text-decoration:none}
+.btn:active{transform:translate(4px,4px);box-shadow:2px 2px 0 #111}
+.cmd{border:2px solid #111!important;border-radius:0;background:#fff!important;color:#111;box-shadow:var(--hard)}
+.cmd .p{color:#5c5b55}
+.cmd button{background:var(--yel)!important;color:#111!important;border:2px solid #111!important;border-radius:0!important}
+.cmd #cmd em{color:#5c5b55!important}
+/* raw output blocks: black, square, hard shadow */
+.term,.console,.pipe,.leak-grid .video{--fg:#f3f1ea;--muted:#b9b6ad;--dim:#8f8c84;--card:#111;--line:#3a3a36;background:#111!important;color:#f3f1ea;border:2px solid #111!important;border-radius:0!important;box-shadow:var(--hard)}
+.term .bar{background:#1c1c1a;border-bottom:2px solid #000}
+.term .bar span{color:#b9b6ad}
+.console .list{background:#161614}
+.console .item.on{background:#22221f;border-left-color:var(--yel)}
+.console .bar i{background:var(--yel)}
+.console pre{background:#000;border-color:#333}
+.pipe .legend{color:#b9b6ad}
+.pipe .lbl{fill:#f3f1ea}
+/* proof numbers and the report: paper cards with ink borders */
+.proof-strip p{background:#fff;border:2px solid #111;box-shadow:var(--hard)}
+.proof-strip b{color:#111}
+.leak-grid .report{background:#fff;border:2px solid #111;border-radius:0;box-shadow:var(--hard)}
+.leak-grid{gap:20px}
+/* tables and lists: ink rules */
+table.ed th,table.ed td{border-top:2px solid #111}
+table.ed tbody tr:last-child>*{border-bottom:2px solid #111}
+table.ed thead th{color:var(--dim)}
+table.ed tbody th{color:#111}
+table.ed code,.signal-line code,dl.news code{color:#111;background:var(--yel);padding:0 .25em}
+dl.news dt,.steps3 .big{color:#111}
+.steps3>div,dl.news>div{border-top:2px solid #111;padding-top:16px}
+/* the evidence section flips to black for rhythm */
+section.paper{background:#111;color:#f3f1ea}
+section.paper h2{color:#f3f1ea}
+section.paper .sub{color:#b9b6ad}
+section.paper .chain .box{background:#f3f1ea;border:2px solid #f3f1ea!important;box-shadow:6px 6px 0 var(--yel);border-radius:0}
+section.paper .chain .arrow{color:var(--yel)}
+section.paper .rule{background:var(--yel);color:#111;border-radius:0}
+/* tiles left in other sections */
+.safe>div{border-top:2px solid #111!important}
+.safe b{color:#111}
+.tile,.inst .box,.box{border-radius:0}
+.numrow b{color:#111}
+.numrow a{color:var(--muted)}
+.badge{border-radius:0}
+.toast{background:#111;color:#f3f1ea;border:2px solid #111;border-radius:0}
+.toast b{color:var(--yel)}
+.wall a{background:#fff;border:2px solid #111;border-radius:0;color:#111}
+footer{border-top:2px solid #111;color:var(--muted)}
+footer a{color:var(--acc)}
+@media (prefers-reduced-motion:reduce){.btn:active{transform:none}}
+.leak-grid .video{padding:0;margin:0;line-height:0;height:auto}
+.leak-grid .video video{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:contain;background:#111}
+html{overflow-x:clip}
+.cursor{animation:none!important}
+section.paper .chain .box{background:#f4f4f2!important;border-color:#f4f4f2!important}
 </style>
 </head>
 <body>
