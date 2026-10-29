@@ -12,7 +12,7 @@
 #dea-consent p{margin:0 0 14px;color:#d6d5d0}#dea-consent a{color:#fff}
 #dea-consent .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 #dea-consent button{font:600 14px/1 inherit;font-family:inherit;padding:11px 18px;border-radius:10px;border:0;background:rgba(255,255,255,.12);color:#f4f4f2;cursor:pointer;min-width:110px;min-height:44px}
-#dea-consent button[data-a="1"]{background:var(--acc,#3b5bff);color:var(--acc-ink,#fff)}
+#dea-consent button[data-a="1"]{background:var(--acc,#ffd21f);color:var(--acc-ink,#141100)}
 #dea-consent button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(max-width:520px){#dea-consent button{flex:1}}`;
 
