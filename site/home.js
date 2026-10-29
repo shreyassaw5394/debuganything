@@ -18,19 +18,6 @@
   };
   const flash = (b) => { const act = $(".cmd-act", b); b.classList.add("done"); if (act) act.textContent = "Copied"; setTimeout(() => { b.classList.remove("done"); if (act) act.textContent = "Copy"; }, 1600); };
 
-  // ---- preview colour choice (?c=chalk|paper) ----
-  const themes = ["forensic", "chalk", "paper"];
-  const setC = (c) => {
-    if (!themes.includes(c)) c = "forensic";
-    if (c === "forensic") delete root.dataset.c; else root.dataset.c = c;
-    $$(".swatch button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.c === c)));
-    try { localStorage.setItem("dea_c2", c); } catch { /* private mode */ }
-  };
-  let c0 = new URLSearchParams(location.search).get("c");
-  if (!c0) { try { c0 = localStorage.getItem("dea_c2"); } catch { /* none */ } }
-  setC(c0 || "forensic");
-  $$(".swatch button").forEach((b) => b.addEventListener("click", () => setC(b.dataset.c)));
-
   // ---- copy boxes ----
   for (const b of $$(".cmd[data-copy]")) b.addEventListener("click", async () => { if (await copyText(b.dataset.copy)) flash(b); });
 
