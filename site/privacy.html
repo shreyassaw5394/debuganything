@@ -8,17 +8,22 @@
 <link rel="icon" href="/logo.svg" type="image/svg+xml">
 <link rel="canonical" href="https://debuganything.dev/privacy">
 <style>
-:root{--bg:#0b0d12;--fg:#eef2f8;--muted:#9aa3b2;--acc:#7cc4ff;--line:#1f2434;color-scheme:dark}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:760px;margin:0 auto;padding:56px 20px 80px}h1{font-size:34px;margin:0 0 6px}h2{font-size:20px;margin:36px 0 8px}
-p,li{color:var(--muted)}a{color:var(--acc)}strong{color:var(--fg)}code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:#151a28;padding:1px 6px;border-radius:5px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px}.top a{text-decoration:none;color:var(--fg);font-weight:600}
-button{font:600 14px system-ui,sans-serif;padding:8px 16px;border-radius:999px;border:1px solid #3a4258;background:transparent;color:var(--fg);cursor:pointer}
+@font-face{font-family:"Plex Sans";src:url(/fonts/IBMPlexSans-var.woff2) format("woff2");font-weight:100 700;font-display:swap}
+:root{--bg:#0b0c0e;--fg:#ececf0;--muted:#a3a7b0;--acc:#6cb6ff;--s1:#131417;--s2:#1a1c20;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.65 "Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:720px;margin:0 auto;padding:48px max(20px,env(safe-area-inset-left)) 96px}
+h1{font-size:clamp(34px,4vw,48px);font-weight:600;letter-spacing:-.03em;line-height:1.08;margin:0 0 8px}
+h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:40px 0 8px}
+p,li{color:var(--muted);max-width:62ch}a{color:var(--acc)}:focus-visible{outline:2px solid var(--acc);outline-offset:3px}strong{color:var(--fg);font-weight:600}
+code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--s2);padding:1px 6px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:56px}.top a{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg);font-weight:600}
+button{font:600 14px/1 inherit;font-family:inherit;padding:11px 16px;border-radius:8px;border:0;background:var(--s2);color:var(--fg);cursor:pointer}
+button:hover{background:#25282d}
 </style>
 </head>
 <body>
 <main>
-  <div class="top"><a href="/">← Debug Anything</a></div>
+  <div class="top"><a href="/"><img src="/mark.svg" alt="" width="28" height="28">Debug Anything</a></div>
   <h1>Privacy</h1>
   <p>Last updated 27 October 2026</p>
 
