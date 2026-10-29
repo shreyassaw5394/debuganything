@@ -3,249 +3,518 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Debug Anything: your agent can see it run</title>
-<meta name="description" content="Your AI agent can write the code. Now it can see it run. Debug Anything attaches to any running process and turns strace, py-spy, perf, lsof, tcpdump, gdb/lldb and heap snapshots into findings that cite their evidence. MCP server, CLI and Python. MIT.">
+<title>Debug Anything</title>
+<meta name="description" content="Your AI agent can write the code. Now it can see it run. Debug Anything attaches to any running process and turns strace, py-spy, perf, lsof, tcpdump, gdb/lldb and heap snapshots into evidence-backed findings. MCP server + CLI + Python. MIT.">
 <meta name="keywords" content="debug running process AI agent, MCP debugging server, strace for Claude Code, py-spy Cursor, memory leak agent, deadlock detection, flamegraph MCP, Debug Anything, debuganything">
 <link rel="canonical" href="https://debuganything.dev/">
 <meta property="og:url" content="https://debuganything.dev/">
 <meta property="og:title" content="Debug Anything">
 <meta property="og:description" content="Your AI agent can write the code. Now it can see it run. Evidence, not guesses.">
-<meta property="og:image" content="https://debuganything.dev/social.png?v=3">
+<meta property="og:image" content="https://debuganything.dev/social.png?v=2">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://debuganything.dev/social.png?v=3">
+<meta name="twitter:image" content="https://debuganything.dev/social.png?v=2">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="icon" type="image/png" sizes="512x512" href="logo-512.png">
 <link rel="apple-touch-icon" href="logo-512.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#0b0c0e">
-<meta name="color-scheme" content="dark">
-<link rel="preload" href="/fonts/IBMPlexSans-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/home.css">
+<meta name="theme-color" content="#0b0d12">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Debug Anything","alternateName":"debuganything","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","url":"https://debuganything.dev","downloadUrl":"https://www.npmjs.com/package/debuganything","codeRepository":"https://github.com/shreyassaw5394/debuganything","license":"https://opensource.org/licenses/MIT","description":"Observe any running process from your AI coding agent: strace, py-spy, perf, lsof, tcpdump, gdb/lldb and heap snapshots turned into findings that cite their evidence. MCP server, CLI and Python package.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"image":"https://debuganything.dev/social.png"}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Debug Anything","alternateName":"debuganything","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","url":"https://debuganything.dev","downloadUrl":"https://www.npmjs.com/package/debuganything","codeRepository":"https://github.com/shreyassaw5394/debuganything","license":"https://opensource.org/licenses/MIT","description":"Observe any running process from your AI coding agent: strace, py-spy, perf, lsof, tcpdump, gdb/lldb and heap snapshots turned into evidence-backed findings. MCP server, CLI and Python package.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"image":"https://debuganything.dev/social.png"}
 </script>
-<script src="/home.js" defer></script>
-<script src="/consent.js" defer></script>
+<style>
+:root{--bg:#0b0d12;--bg2:#0f1320;--fg:#eef2f8;--muted:#9aa3b2;--dim:#5f6878;--acc:#7cc4ff;--acc2:#ffb86b;--ok:#8be28b;--warn:#ffb86b;--high:#ff7b7b;--card:#121521;--line:#1f2434;--glow:rgba(124,196,255,.25);color-scheme:dark}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+h1,h2,h3{letter-spacing:-.02em;margin:0}
+h2{font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.1}
+.sub{color:var(--muted);font-size:clamp(16px,1.6vw,20px);max-width:720px;margin:14px 0 0}
+section{padding:96px 0}
+.eyebrow{color:var(--acc);font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+/* nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;backdrop-filter:saturate(160%) blur(14px);background:rgba(11,13,18,.72);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:18px;height:60px}
+nav .brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--fg)}nav .brand img{width:30px;height:30px;border-radius:8px}
+nav .links{margin-left:auto;display:flex;gap:18px;font-size:14px;color:var(--muted)}nav .links a{color:var(--muted)}nav .links a:hover{color:var(--fg);text-decoration:none}
+@media(max-width:720px){nav .links a:nth-child(n+4){display:none}}
+/* hero */
+.hero{padding:88px 0 56px;position:relative}
+.hero::before{content:"";position:absolute;inset:-200px 0 auto;height:620px;background:radial-gradient(600px 300px at 30% 20%,rgba(124,196,255,.14),transparent 70%),radial-gradient(500px 260px at 75% 10%,rgba(255,184,107,.10),transparent 70%);pointer-events:none}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;position:relative}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr}}
+h1{font-size:clamp(38px,5.6vw,66px);font-weight:800;line-height:1.02}
+h1 span{background:linear-gradient(90deg,#9ad4ff,#5aa9f0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cmd{display:inline-flex;align-items:center;gap:14px;margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px 12px 18px;font:500 15px ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:0 0 0 0 var(--glow);transition:box-shadow .3s}
+.cmd:hover{box-shadow:0 0 0 6px var(--glow)}
+.cmd .p{color:var(--dim)}.cmd button{background:var(--acc);color:#061018;border:0;border-radius:8px;padding:7px 12px;font-weight:700;cursor:pointer;font-family:inherit}
+.ctas{display:flex;gap:14px;margin-top:22px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:10px;border:1px solid var(--line);color:var(--fg);font-weight:600;font-size:14px;background:rgba(255,255,255,.02)}
+.btn:hover{text-decoration:none;border-color:#2b3347;background:rgba(255,255,255,.04)}
+.btn.primary{background:var(--fg);color:#0b0d12;border-color:var(--fg)}
+.meta{color:var(--dim);font-size:13px;margin-top:18px}
+/* terminal */
+.term{background:#0a0c12;border:1px solid var(--line);border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.02) inset;overflow:hidden;min-height:380px}
+.term .bar{display:flex;gap:7px;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line);background:#0d1018}
+.term .bar i{width:11px;height:11px;border-radius:50%;background:#2b3347}.term .bar i:nth-child(1){background:#ff5f57}.term .bar i:nth-child(2){background:#febc2e}.term .bar i:nth-child(3){background:#28c840}
+.term .bar span{margin-left:auto;color:var(--dim);font:12px ui-monospace,SFMono-Regular,Menlo,monospace}
+.term pre{margin:0;padding:16px 18px;font-size:13px;line-height:1.55;white-space:pre-wrap;word-break:break-word;color:#dfe3ea;min-height:340px}
+.term .c{color:var(--dim)}.term .prompt{color:#9ad4ff}.term .ok{color:var(--ok)}.term .warn{color:var(--warn);font-weight:700}.term .high{color:var(--high);font-weight:700}.term .info{color:var(--acc);font-weight:700}.term .ev{color:#c9b7ff}.term .dim{color:var(--dim)}.term .k{color:var(--acc2)}
+.cursor{display:inline-block;width:8px;height:15px;background:#9ad4ff;vertical-align:-2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+/* pipeline */
+.pipe{position:relative;margin-top:40px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 24px;overflow:hidden}
+.pipe svg{width:100%;height:auto;display:block}
+.pipe .node{fill:#0f1320;stroke:#2b3347;stroke-width:1.5;transition:stroke .4s,filter .4s}
+.pipe .node.lit{stroke:var(--acc);filter:drop-shadow(0 0 10px rgba(124,196,255,.45))}
+.pipe .lbl{fill:#eef2f8;font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif}
+.pipe .sm{fill:#9aa3b2;font:12px ui-monospace,SFMono-Regular,Menlo,monospace}
+.pipe .flow{fill:none;stroke:#2b3347;stroke-width:2}
+.pipe .flow.on{stroke:var(--acc2);stroke-dasharray:6 10;animation:dash 1.2s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-32}}
+.pipe .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:14px}
+/* video */
+.video{border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.5);background:#000}
+.video video{width:100%;display:block}
+/* incident console */
+.console{display:grid;grid-template-columns:300px 1fr;gap:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);margin-top:36px;min-height:460px}
+@media(max-width:860px){.console{grid-template-columns:1fr}}
+.console .list{border-right:1px solid var(--line);background:#0e1119}
+@media(max-width:860px){.console .list{border-right:0;border-bottom:1px solid var(--line);display:flex;overflow-x:auto}}
+.console .item{display:flex;gap:12px;align-items:center;padding:14px 16px;cursor:pointer;color:var(--muted);border-left:3px solid transparent;transition:all .25s;white-space:nowrap}
+.console .item:hover{color:var(--fg);background:rgba(255,255,255,.02)}
+.console .item.on{color:var(--fg);border-left-color:var(--acc2);background:rgba(255,184,107,.06)}
+.console .item .ic{font-size:18px;width:24px;text-align:center}
+.console .item small{display:block;color:var(--dim);font-size:12px;white-space:normal}
+.console .pane{padding:26px 28px;display:flex;flex-direction:column;gap:14px}
+.console .sym{font-size:20px;font-weight:700}
+.console .sym em{color:var(--muted);font-weight:400;font-style:normal}
+.console .step{display:grid;grid-template-columns:92px 1fr;gap:14px;align-items:start;opacity:0;transform:translateY(8px);transition:all .45s}
+.console .step.in{opacity:1;transform:none}
+.console .tag{font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding-top:6px}
+.console pre{margin:0;background:#0a0c12;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;white-space:pre-wrap;color:#dfe3ea}
+.console .fix{color:#cfd5df}
+.console .bar{height:3px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:auto}.console .bar i{display:block;height:100%;width:0;background:var(--acc2);transition:width .2s linear}
+.badge{display:inline-block;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;padding:4px 7px;border-radius:6px;margin-right:6px}
+.badge.high{background:rgba(255,123,123,.16);color:var(--high)}.badge.warn{background:rgba(255,184,107,.16);color:var(--warn)}.badge.info{background:rgba(124,196,255,.16);color:var(--acc)}
+.evid{color:#c9b7ff}
+/* evidence chain */
+.chain{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:16px;align-items:center;margin-top:36px}
+@media(max-width:860px){.chain{grid-template-columns:1fr}.chain .arrow{transform:rotate(90deg);justify-self:center}}
+.chain .box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;transition:border-color .3s,box-shadow .3s}
+.chain .box:hover,.chain .box.lit{border-color:var(--acc);box-shadow:0 0 0 4px var(--glow)}
+.chain .box h3{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;font-weight:600}
+.chain pre{margin:0;font-size:13px;white-space:pre-wrap;color:#dfe3ea;line-height:1.5}
+.chain .arrow{color:var(--acc2);font-size:28px;text-align:center}
+.rule{margin-top:22px;padding:16px 18px;border-left:3px solid var(--acc2);background:rgba(255,184,107,.06);border-radius:0 10px 10px 0;color:#dfe3ea}
+/* timeline */
+.tl{display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-top:40px;position:relative}
+@media(max-width:960px){.tl{grid-template-columns:repeat(2,1fr);gap:18px}}
+@media(max-width:560px){.tl{grid-template-columns:1fr}}
+.tl::before{content:"";position:absolute;left:0;right:0;top:19px;height:2px;background:linear-gradient(90deg,var(--acc),var(--acc2));opacity:.35}
+@media(max-width:960px){.tl::before{display:none}}
+.tl .st{padding:0 14px;opacity:0;transform:translateY(14px);transition:all .6s}
+.tl .st.in{opacity:1;transform:none}
+.tl .dot{width:40px;height:40px;border-radius:50%;background:var(--card);border:2px solid var(--acc);display:grid;place-items:center;font-weight:700;color:var(--acc);margin-bottom:14px;position:relative;z-index:1}
+.tl h3{font-size:16px;margin-bottom:6px}.tl p{color:var(--muted);font-size:14px;margin:0 0 10px}
+.tl code{display:block;background:#0a0c12;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;color:var(--acc);white-space:pre-wrap}
+/* proactive */
+.pro{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;margin-top:36px}
+@media(max-width:860px){.pro{grid-template-columns:1fr}}
+.toast{position:absolute;right:16px;bottom:16px;max-width:380px;background:#131a2a;border:1px solid #2a3650;border-left:3px solid var(--acc2);border-radius:12px;padding:12px 14px;font-size:13px;color:#dfe3ea;box-shadow:0 20px 50px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .5s}
+.toast.show{transform:none;opacity:1}
+.toast b{color:var(--acc2)}
+.signals{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.signals span{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:#0a0c12;border:1px solid var(--line);border-radius:999px;padding:6px 11px;color:var(--muted)}
+/* grid tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:36px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;transition:transform .25s,border-color .25s}
+.tile:hover{transform:translateY(-3px);border-color:#2b3347}
+.tile h3{font-size:16px;margin-bottom:6px}.tile p{margin:0;color:var(--muted);font-size:14px}.tile .req{margin-top:10px;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--acc)}
+/* install */
+.inst{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:36px}
+.inst .box{background:#0a0c12;border:1px solid var(--line);border-radius:14px;padding:16px}
+.inst h3{font-size:14px;color:var(--muted);margin-bottom:10px}
+.inst pre{margin:0;font-size:13px;color:#dfe3ea;white-space:pre-wrap}.inst pre b{color:var(--acc);font-weight:500}
+/* safety */
+.safe{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:30px}
+.safe div{border-top:2px solid var(--line);padding-top:12px;color:var(--muted);font-size:14px}.safe div b{display:block;color:var(--fg);margin-bottom:4px}
+footer{border-top:1px solid var(--line);padding:40px 0 60px;color:var(--dim);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+footer .links{margin-left:auto;display:flex;gap:16px}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s,transform .7s}.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.tl .st,.console .step{opacity:1;transform:none}}
+
+.tile .num{font-size:34px;font-weight:800;letter-spacing:-.02em;color:var(--fg);margin-bottom:4px}
+a.tile{display:block;color:inherit}a.tile:hover{text-decoration:none}
+.wall{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+.wall a{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px;color:var(--fg);font-size:14px;transition:border-color .25s,transform .25s}
+.wall a:hover{border-color:var(--acc);transform:translateY(-2px);text-decoration:none}
+.wall img{width:32px;height:32px;border-radius:50%}
+.wall small{color:var(--dim);margin-left:4px}
+</style>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
-<header class="top">
-  <a class="brand" href="/" aria-label="Debug Anything home"><img src="logo.svg" alt="" width="26" height="26"><span>Debug Anything</span></a>
-  <nav class="nav" aria-label="Sections">
-    <a href="#incidents">Incidents</a>
-    <a href="#sees">What it sees</a>
-    <a href="/analyze">Analyzer</a>
-    <a href="docs/README.md">Docs</a>
-  </nav>
-  <a class="btn btn-small" href="#start">Install</a>
-</header>
+<nav><div class="wrap">
+  <a class="brand" href="#"><img src="logo.svg" alt="">Debug Anything</a>
+  <div class="links"><a href="analyze" style="color:var(--acc)">Analyzer</a><a href="#how">How it works</a><a href="#real">Real-world</a><a href="#workflow">Workflow</a><a href="#new">What's new</a><a href="#skills">Skills</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://discord.gg/htPuQ5grg">Discord</a></div>
+</div></nav>
 
-<main id="main">
+<section class="hero"><div class="wrap">
+  <div>
+    <div class="eyebrow">Debug Anything · open source · MIT</div>
+    <h1>Your AI agent can write the code.<br><span>Now it can see it run.</span></h1>
+    <p class="sub">When your app is slow, stuck, crashing or eating memory, your AI agent used to read the code and guess. With Debug Anything it looks inside the <em>running</em> app, measures what is actually happening, and shows you the proof. One command to install. No terminal skills needed.</p>
+    <div class="cmd"><span class="p">$</span><span id="cmd">npx debuganything why <em style="font-style:normal;color:var(--dim)">&lt;pid&gt;</em></span><button onclick="navigator.clipboard&&navigator.clipboard.writeText('npx debuganything why ');this.textContent='copied — add your pid'">copy</button></div>
+    <p class="meta" style="margin-top:8px">One command: attach → the right tools for the symptom → ranked findings, every one citing evidence. Agent setup: <code>npx debuganything setup</code> · No install? <a href="analyze">Paste tool output in the browser →</a></p>
+    <div class="ctas"><a class="btn primary" href="#video">Watch it find a leak · 40s</a><a class="btn" href="https://github.com/shreyassaw5394/debuganything">★ GitHub</a><a class="btn" href="docs/README.md">Read the docs</a></div>
+    <p class="meta">Works with Claude Code, Cursor, Codex, Gemini CLI and anything that speaks MCP · Python: <code>pip install debuganything</code></p>
+  </div>
+  <div class="term" aria-label="Debug Anything session replay"><div class="bar"><i></i><i></i><i></i><span>debuganything — real session, replayed</span></div><pre id="replay"></pre></div>
+</div></section>
 
-<section class="hero" id="hero" aria-labelledby="hero-title">
-  <div class="hero-stage">
-    <div class="strip-bg" aria-hidden="true"></div>
-    <h1 id="hero-title" class="split"><span class="half a">Now your agent</span><span class="half b">sees it run.</span></h1>
-    <div class="reel" aria-label="A real leak investigation, its report and its flamegraph">
-      <div class="reel-track" id="reel">
-        <figure class="frame"><video src="/media/leak-session.mp4" poster="/media/leak-session-poster.jpg" width="960" height="600" muted playsinline preload="metadata" aria-label="A real Debug Anything session finding a Node.js memory leak, replayed"></video></figure>
-        <figure class="frame"><img src="/media/report-findings.jpg" width="1400" height="967" alt="The HTML report from the same session: two high findings, each citing evidence ids" loading="lazy"></figure>
-        <figure class="frame"><img src="/media/report-flamegraph.jpg" width="1400" height="668" alt="A CPU flamegraph embedded in the same report" loading="lazy"></figure>
-      </div>
+
+<section id="plain" style="padding-top:20px"><div class="wrap">
+  <div class="eyebrow">In plain English</div>
+  <h2>You say what's wrong. Your agent goes and looks.</h2>
+  <div class="tiles reveal" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+    <div class="tile"><div style="font-size:34px;margin-bottom:8px">🗣️</div><h3>1. You say it, however you say it</h3><p>“It's slow after a while.” “It just freezes.” “Memory keeps going up.” “Port already in use.” “The container keeps dying.”</p></div>
+    <div class="tile"><div style="font-size:34px;margin-bottom:8px">🔍</div><h3>2. The agent looks inside the running app</h3><p>Not the code on screen, the program actually running. Debug Anything uses the same tools senior engineers use, drives them for the agent, and keeps it safe: it only watches, never changes anything.</p></div>
+    <div class="tile"><div style="font-size:34px;margin-bottom:8px">🧾</div><h3>3. You get the cause, with a receipt</h3><p>“This list grows and is never emptied.” “This function uses 58% of the CPU.” “Two threads are waiting on each other.” Every sentence points at the measurement behind it, so it can't make things up.</p></div>
+  </div>
+  <p class="meta" style="margin-top:18px">Then it fixes the code the way it already can, measures again, and shows the before/after. That is the whole loop.</p>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <div class="eyebrow">How it sees</div>
+  <h2>The agent asks. Debug Anything measures. Every claim points at proof.</h2>
+  <p class="sub">The agent never touches a tool directly. Debug Anything picks the right one, runs it inside hard limits, keeps the raw output as an artifact, and returns a short structured result.</p>
+  <div class="pipe reveal">
+    <svg viewBox="0 0 1060 300" role="img" aria-label="Agent to Debug Anything to tools to evidence to finding">
+      <defs><marker id="m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffb86b"/></marker></defs>
+      <g id="n1"><rect class="node" x="10" y="110" width="150" height="80" rx="14"/><text class="lbl" x="85" y="145" text-anchor="middle">Agent</text><text class="sm" x="85" y="168" text-anchor="middle">"it's slow"</text></g>
+      <path class="flow" id="f1" d="M160 150 H215" marker-end="url(#m)"/>
+      <g id="n2"><rect class="node" x="220" y="95" width="170" height="110" rx="14"/><text class="lbl" x="305" y="137" text-anchor="middle">Debug Anything</text><text class="sm" x="305" y="160" text-anchor="middle">attach · cap · parse</text><text class="sm" x="305" y="180" text-anchor="middle">redact · cite</text></g>
+      <path class="flow" id="f2" d="M390 125 C430 125 430 40 470 40" marker-end="url(#m)"/>
+      <path class="flow" id="f3" d="M390 140 C430 140 430 95 470 95" marker-end="url(#m)"/>
+      <path class="flow" id="f4" d="M390 150 H470" marker-end="url(#m)"/>
+      <path class="flow" id="f5" d="M390 160 C430 160 430 205 470 205" marker-end="url(#m)"/>
+      <path class="flow" id="f6" d="M390 175 C430 175 430 260 470 260" marker-end="url(#m)"/>
+      <g id="n3">
+        <rect class="node" x="475" y="20" width="150" height="40" rx="10"/><text class="sm" x="550" y="45" text-anchor="middle" style="fill:#eef2f8">strace · syscalls</text>
+        <rect class="node" x="475" y="75" width="150" height="40" rx="10"/><text class="sm" x="550" y="100" text-anchor="middle" style="fill:#eef2f8">py-spy · perf · CPU</text>
+        <rect class="node" x="475" y="130" width="150" height="40" rx="10"/><text class="sm" x="550" y="155" text-anchor="middle" style="fill:#eef2f8">gdb · lldb · stacks</text>
+        <rect class="node" x="475" y="185" width="150" height="40" rx="10"/><text class="sm" x="550" y="210" text-anchor="middle" style="fill:#eef2f8">lsof · tcpdump · net</text>
+        <rect class="node" x="475" y="240" width="150" height="40" rx="10"/><text class="sm" x="550" y="265" text-anchor="middle" style="fill:#eef2f8">heap · docker</text>
+      </g>
+      <path class="flow" id="f7" d="M625 40 C665 40 665 150 705 150" marker-end="url(#m)"/>
+      <path class="flow" id="f8" d="M625 95 C665 95 665 150 705 150"/>
+      <path class="flow" id="f9" d="M625 150 H705"/>
+      <path class="flow" id="f10" d="M625 205 C665 205 665 150 705 150"/>
+      <path class="flow" id="f11" d="M625 260 C665 260 665 150 705 150"/>
+      <g id="n4"><rect class="node" x="710" y="105" width="150" height="90" rx="14"/><text class="lbl" x="785" y="140" text-anchor="middle">Evidence</text><text class="sm" x="785" y="162" text-anchor="middle">e1 e2 e3 → artifacts</text><text class="sm" x="785" y="180" text-anchor="middle">on disk, auditable</text></g>
+      <path class="flow" id="f12" d="M860 150 H905" marker-end="url(#m)"/>
+      <g id="n5"><rect class="node" x="910" y="95" width="140" height="110" rx="14"/><text class="lbl" x="980" y="132" text-anchor="middle">Finding</text><text class="sm" x="980" y="155" text-anchor="middle">must cite ids</text><text class="sm" x="980" y="175" text-anchor="middle">observed / inferred</text><text class="sm" x="980" y="193" text-anchor="middle">+ limitations</text></g>
+    </svg>
+    <div class="legend"><span>⏱ 60 s cap per tool</span><span>📦 50 MB raw cap</span><span>📨 16 KB to the agent</span><span>🔒 read-only, no sudo, no network</span></div>
+  </div>
+</div></section>
+
+<section id="video"><div class="wrap">
+  <div class="eyebrow">40 seconds</div>
+  <h2>A memory leak, found and named.</h2>
+  <p class="sub">Two snapshots, a diff, and the retainer: <code>Array retains 50 MB via Context.retained</code>, the module-level array in <code>server.js</code>. Real output, no edits.</p>
+  <div class="video reveal" style="margin-top:32px"><video src="docs/demo.mp4" poster="social.png" autoplay muted loop playsinline controls></video></div>
+</div></section>
+
+<section id="real"><div class="wrap">
+  <div class="eyebrow">Real-world situations</div>
+  <h2>The 3 am incidents, with the session that solves each.</h2>
+  <p class="sub">Numbers from our own reproductions are real; the rest show the shape of the evidence. Every finding carries its evidence ids.</p>
+  <div class="console reveal" id="console">
+    <div class="list" id="clist"></div>
+    <div class="pane" id="cpane"></div>
+  </div>
+  <p class="meta" style="margin-top:14px">Full write-ups with the fix and how to prove it: <a href="docs/real-world.md">real-world.md</a> · <a href="docs/examples.md">10 copy-paste examples</a></p>
+</div></section>
+
+<section id="evidence"><div class="wrap">
+  <div class="eyebrow">The rule</div>
+  <h2>No evidence, no claim.</h2>
+  <p class="sub">A finding without evidence ids is rejected by the schema before it ever reaches the agent. Hover the chain.</p>
+  <div class="chain reveal" id="chain">
+    <div class="box" data-l="1"><h3>Finding</h3><pre><span class="badge high">HIGH</span>likely deadlock: 2 threads blocked acquiring locks, none running
+<span class="evid">[inferred; e14, e1]</span></pre></div>
+    <div class="arrow">→</div>
+    <div class="box" data-l="2"><h3>Evidence</h3><pre><span class="evid">e14</span> lock_wait  worker-ab-20 at worker_ab (app.py:38) <span class="k" style="color:#ffb86b">[with lock_b:]</span>
+<span class="evid">e1</span>  stack_summary  64 threads: 0 active</pre></div>
+    <div class="arrow">→</div>
+    <div class="box" data-l="3"><h3>Artifact</h3><pre>~/.debuganything/sessions/…/artifacts/
+  pyspy-dump.txt  <span class="dim" style="color:#5f6878">(raw, 6.3 KB)</span>
+open it. same bytes the agent saw.</pre></div>
+  </div>
+  <div class="rule"><b>observed</b> = read straight off the tool. <b>inferred</b> = a reasoning step, labeled as such. <b>limitations</b> = what it could not see ("sampled 10 s", "no root"). That is what makes an answer auditable instead of trusted.</div>
+</div></section>
+
+<section id="workflow"><div class="wrap">
+  <div class="eyebrow">Workflow</div>
+  <h2>From one laptop to the whole team in a week.</h2>
+  <p class="sub">One command per developer, one command per repo, evidence in pull requests, a gate in CI. Nothing to host.</p>
+  <div class="tl" id="tl">
+    <div class="st"><div class="dot">0</div><h3>You</h3><p>Register with your agent. Ask it something about a running process.</p><code>npx debuganything setup</code></div>
+    <div class="st"><div class="dot">1</div><h3>Your repo</h3><p>Commit three files; every teammate's agent gets Debug Anything and the rule for when to use it.</p><code>debuganything init</code></div>
+    <div class="st"><div class="dot">2</div><h3>Pull requests</h3><p>Perf and bug fixes carry run ids. Reviewers open the artifact instead of asking "did you measure?"</p><code>debuganything diff profile_cpu#2 profile_cpu#3</code></div>
+    <div class="st"><div class="dot">3</div><h3>CI</h3><p>Smoke test under two snapshots; fail the job if RSS grows.</p><code>debuganything diff … --json | jq -e …</code></div>
+    <div class="st"><div class="dot">4</div><h3>Containers</h3><p>Linux hosts attach by container name. Kubernetes via an ephemeral debug container.</p><code>kubectl debug … -- debuganything why 1</code></div>
+    <div class="st"><div class="dot">5</div><h3>On-call agent</h3><p>A Python agent reacts to the alert, measures, posts findings with the report path.</p><code>pip install debuganything</code></div>
+  </div>
+  <p class="meta" style="margin-top:22px">Day-by-day guide: <a href="docs/workflows.md">workflows.md</a></p>
+</div></section>
+
+<section id="proactive"><div class="wrap">
+  <div class="eyebrow">Unprompted</div>
+  <h2>You stop asking. The agent goes to look.</h2>
+  <div class="pro">
+    <div class="term reveal" style="position:relative;min-height:300px"><div class="bar"><i></i><i></i><i></i><span>claude code</span></div><pre id="pro-term" style="min-height:250px"></pre><div class="toast" id="toast"><b>[Debug Anything]</b> The last command's output shows a runtime problem signal. <br>port_busy (“EADDRINUSE :::3000”): run <code>debuganything port 3000</code>; never kill it blindly.</div></div>
+    <div>
+      <p class="sub" style="margin-top:0">The skill and the MCP instructions tell the agent to attach and measure on these signals. In Claude Code, a 40 ms hook spots them in command output and prompts, and nudges the model toward the right tool. Read-only observation needs no permission; packet capture always does.</p>
+      <div class="signals"><span>EADDRINUSE</span><span>ECONNREFUSED</span><span>EMFILE</span><span>exit 137</span><span>OOMKilled</span><span>SIGSEGV</span><span>test timeout</span><span>"it hangs"</span><span>"it's slow"</span><span>"memory keeps growing"</span><span>after a perf change</span></div>
+      <p class="meta"><a href="docs/proactive.md">How it works, and the off switch</a></p>
     </div>
-    <div class="hero-foot">
-      <p>When your app is slow, stuck, crashing or eating memory, your AI agent looks inside the running program, measures what is happening, and answers with the evidence behind every claim. It only looks; it never changes anything.</p>
-      <div class="hero-act">
-        <button class="cmd" type="button" data-copy="npx debuganything setup"><code translate="no">npx debuganything setup</code><span class="cmd-act">Copy</span></button>
-        <button class="vid-ctl" type="button" hidden>Pause</button>
-      </div>
+  </div>
+</div></section>
+
+<section id="observe"><div class="wrap">
+  <div class="eyebrow">What you can observe</div>
+  <h2>The tools SREs trust. Driven by the agent.</h2>
+  <div class="tiles reveal">
+    <div class="tile"><h3>Sockets &amp; files</h3><p>Listening ports, connections by remote, CLOSE_WAIT pileups, fd growth, deleted-but-open files.</p><div class="req">lsof · Linux, macOS · no root</div></div>
+    <div class="tile"><h3>Node.js heap</h3><p>Heap snapshot, exact top retainers with the retaining path, JS main-thread stack.</p><div class="req">inspector · built in</div></div>
+    <div class="tile"><h3>Python</h3><p>CPU flamegraph, every thread's stack, lock / join / sleep / I/O classification from source lines, deadlocks.</p><div class="req">py-spy</div></div>
+    <div class="tile"><h3>Linux syscalls</h3><p>Top syscalls by time, slowest calls with paths and addresses, error counts, blocking share.</p><div class="req">strace</div></div>
+    <div class="tile"><h3>Native · Go · Java</h3><p>perf or sample flamegraphs; gdb / lldb thread dumps with mutex vs idle classification.</p><div class="req">perf, gdb · sample, lldb</div></div>
+    <div class="tile"><h3>Network</h3><p>Per-remote bytes, RSTs, unanswered SYNs, retransmits, DNS, .pcap. Filter scoped to the target.</p><div class="req">tcpdump · consent</div></div>
+    <div class="tile"><h3>Docker</h3><p>OOM kills, exit codes, restarts, limits vs usage, cgroup throttling, log tail.</p><div class="req">docker</div></div>
+    <div class="tile"><h3>Captured it yourself?</h3><p>Needs root? Debug Anything prints the sudo command; you run it and <code>debuganything import</code> the file. strace, fs_usage, perf, py-spy, sample, gdb/lldb, lsof, tcpdump.</p><div class="req">debuganything import · macOS trace via fs_usage</div></div>
+    <div class="tile"><h3>Before / after</h3><p>Diff any two runs: what grew, appeared, disappeared. Proof for the PR.</p><div class="req">diff_runs</div></div>
+  </div>
+</div></section>
+
+<section id="new"><div class="wrap">
+  <div class="eyebrow">What's new</div>
+  <h2>October 2026</h2>
+  <div class="inst reveal" style="margin-top:20px">
+    <div class="box">
+      <h3>The <code>inspect-product</code> skill <span style="color:#7cc4ff;font-size:13px">new</span></h3>
+      <p class="sub" style="margin:8px 0 0">Audit a whole product instead of one bug. The agent signs up fresh, walks the real path, watches the server while it does, and reports findings that each carry a reproduction. On its first run against a live app it found a balance that never refreshed on screen — twenty points earned, nothing shown, until you happened to navigate.</p>
+    </div>
+    <div class="box">
+      <h3>Java and Go</h3>
+      <p class="sub" style="margin:8px 0 0">JVM thread dumps and goroutine dumps, live or pasted. Deadlocks the JVM reports itself, monitor contention, goroutine leaks by parked site, and goroutines stuck for minutes.</p>
+    </div>
+    <div class="box">
+      <h3>Paste, don't install</h3>
+      <p class="sub" style="margin:8px 0 0">The <a href="analyze">analyzer</a> reads strace, py-spy, jstack, goroutine, lsof, gdb, perf and tcpdump output in your browser. Nothing is uploaded.</p>
+    </div>
+    <div class="box">
+      <h3>Reports you can send</h3>
+      <p class="sub" style="margin:8px 0 0"><code>debuganything report --html</code> writes one self-contained file: ranked findings, evidence you can expand, flamegraphs embedded. Paste it in a thread.</p>
+    </div>
+    <div class="box">
+      <h3>Compare against a healthy run</h3>
+      <p class="sub" style="margin:8px 0 0">Record a session while things are fine, then diff a broken one against it: <code>debuganything diff --session now '&lt;baseline&gt;:inspect_files' inspect_files</code>.</p>
+    </div>
+    <div class="box">
+      <h3>When CI hangs</h3>
+      <p class="sub" style="margin:8px 0 0">The <a href="https://github.com/shreyassaw5394/debuganything-action">GitHub Action</a> wraps your test command. On a timeout it attaches before the kill and uploads stacks, sockets and findings.</p>
     </div>
   </div>
-</section>
+</div></section>
 
-<section class="row-sec" id="incidents" aria-labelledby="incidents-title">
-  <h2 id="incidents-title" class="sr">Eight real incidents</h2>
-  <div class="row" id="row" tabindex="0" aria-label="Incidents. Scroll sideways or use the buttons."></div>
-  <div class="row-side" aria-live="polite">
-    <p class="row-name" id="row-name">EMFILE at 2 am</p>
-    <p class="row-plain" id="row-plain"></p>
-    <div class="row-ctl"><button type="button" id="row-prev" aria-label="Previous incident">Previous</button><button type="button" id="row-next" aria-label="Next incident">Next</button><span id="row-count"></span></div>
-  </div>
-</section>
-
-<section class="strip4" aria-labelledby="loop-title">
-  <div class="f f1" data-r>
-    <h2 id="loop-title">The whole loop.</h2>
-    <article class="card" data-ui><p class="card-k">You, to your agent</p><p class="card-big">“Memory keeps going up after a while.”</p></article>
-    <p class="clause">First you say what's wrong.</p>
-  </div>
-  <div class="f f2" data-r>
-    <article class="card" data-ui><p class="card-k"><code translate="no">snapshot_memory#5</code></p><p class="card-big">3.4 s</p><p class="card-row">5 evidence · 2 findings</p><p class="card-row"><code translate="no">heap.heapsnapshot</code> 7.5 MB</p></article>
-    <p class="clause">Then it attaches and measures.</p>
-  </div>
-  <div class="f f3" data-r>
-    <article class="card" data-ui><p class="card-k"><span class="sev warn">WARN</span></p><p class="card-big">Array retains 87.7 MB, 93% of the heap</p><p class="card-row"><code translate="no">[observed; e5, e3]</code></p></article>
-    <p class="clause">Every claim cites its proof.</p>
-  </div>
-  <div class="f f4" data-r>
-    <article class="card" data-ui><p class="card-k"><code translate="no">diff_runs#6</code></p><p class="card-big">47.2 → 323.0 MB</p><p class="card-row"><span class="sev high">HIGH</span> Array grew 2.0 KB → 87.7 MB</p></article>
-    <p class="clause">Then the diff names the leak.</p>
-  </div>
-</section>
-
-<section class="sees" id="sees" aria-labelledby="sees-title">
-  <div class="sees-head" data-r>
-    <h2 id="sees-title"><span class="soft">What it can see</span><br>in a running program.</h2>
-    <a class="btn" href="/analyze">Try the analyzer</a>
-  </div>
-  <div class="sees-body">
-    <div class="days" role="tablist" aria-label="Runtime" aria-orientation="vertical">
-      <button role="tab" aria-selected="true" aria-controls="p-node" id="d-node" type="button">Node.js<small>heap, stacks</small></button>
-      <button role="tab" aria-selected="false" aria-controls="p-py" id="d-py" type="button" tabindex="-1">Python<small>py-spy</small></button>
-      <button role="tab" aria-selected="false" aria-controls="p-native" id="d-native" type="button" tabindex="-1">Native, Go, Java<small>perf, gdb, lldb</small></button>
-      <button role="tab" aria-selected="false" aria-controls="p-os" id="d-os" type="button" tabindex="-1">Linux and macOS<small>strace, lsof</small></button>
-      <button role="tab" aria-selected="false" aria-controls="p-net" id="d-net" type="button" tabindex="-1">Network<small>tcpdump</small></button>
-      <button role="tab" aria-selected="false" aria-controls="p-box" id="d-box" type="button" tabindex="-1">Containers<small>docker</small></button>
+<section id="skills"><div class="wrap">
+  <div class="eyebrow">Two skills, one install</div>
+  <h2>Your agent knows <em>when</em> to look, not just how.</h2>
+  <p class="sub">Skills are standing instructions your agent reads on its own. Debug Anything ships two, and <code>npx debuganything setup</code> installs both.</p>
+  <div class="inst reveal" style="margin-top:22px">
+    <div class="box">
+      <h3>debug-anything</h3>
+      <p class="sub" style="margin:8px 0 10px">Fix the bug in front of you. Fires on its own when a command hangs, a port is taken, a process is killed for memory, or you say <em>slow</em>, <em>stuck</em> or <em>leaking</em> — attach, measure, answer with evidence ids.</p>
+      <pre><b>npx</b> debuganything setup</pre>
     </div>
-    <div class="bands-wrap">
-      <ul class="bands" role="tabpanel" id="p-node" aria-labelledby="d-node">
-        <li><b>Heap snapshot</b><span>Top retainers with the retaining path, two snapshots diffed.</span><em>inspector, built in</em></li>
-        <li><b>Main-thread stack</b><span>What the event loop is doing right now.</span><em>inspector</em></li>
-        <li><b>CPU profile</b><span>Flamegraph of where time goes.</span><em>sample, perf</em></li>
-        <li><b>Memory over time</b><span>RSS sampled, so growth is measured, not guessed.</span><em>ps</em></li>
-      </ul>
-      <ul class="bands" role="tabpanel" id="p-py" aria-labelledby="d-py" hidden>
-        <li><b>CPU flamegraph</b><span>Where a Python process spends its time.</span><em>py-spy</em></li>
-        <li><b>Every thread's stack</b><span>Classified as lock, join, sleep or I/O from the source lines.</span><em>py-spy dump</em></li>
-        <li><b>Deadlocks</b><span>Two threads each waiting on the other's lock, named with file and line.</span><em>py-spy</em></li>
-      </ul>
-      <ul class="bands" role="tabpanel" id="p-native" aria-labelledby="d-native" hidden>
-        <li><b>Flamegraphs</b><span>perf on Linux, sample on macOS.</span><em>perf, sample</em></li>
-        <li><b>Thread dumps</b><span>Mutex waits told apart from idle threads.</span><em>gdb, lldb</em></li>
-        <li><b>Java and Go</b><span>JVM deadlocks, monitor contention, goroutine leaks by parked site.</span><em>jstack, goroutine dumps</em></li>
-      </ul>
-      <ul class="bands" role="tabpanel" id="p-os" aria-labelledby="d-os" hidden>
-        <li><b>Syscalls</b><span>Top calls by time, slowest calls with paths, error counts, blocking share.</span><em>strace (Linux)</em></li>
-        <li><b>Sockets</b><span>Listening ports, connections by remote, CLOSE_WAIT pile-ups.</span><em>lsof, no root</em></li>
-        <li><b>Files</b><span>Descriptor growth, files deleted but still held open.</span><em>lsof</em></li>
-        <li><b>Who holds a port</b><span>The pid and command behind EADDRINUSE.</span><em>debuganything port</em></li>
-      </ul>
-      <ul class="bands" role="tabpanel" id="p-net" aria-labelledby="d-net" hidden>
-        <li><b>Traffic by remote</b><span>Bytes, resets, unanswered SYNs, retransmits, DNS lookups.</span><em>tcpdump, consent</em></li>
-        <li><b>Packet capture</b><span>A .pcap scoped to the target's ports. Asks every time.</span><em>tcpdump, consent</em></li>
-      </ul>
-      <ul class="bands" role="tabpanel" id="p-box" aria-labelledby="d-box" hidden>
-        <li><b>Container state</b><span>OOM kills, exit codes, restarts, log tail.</span><em>docker</em></li>
-        <li><b>Limits against usage</b><span>cgroup memory and CPU limits, throttling.</span><em>docker, cgroups</em></li>
-        <li><b>Kubernetes</b><span>Through an ephemeral debug container.</span><em>kubectl debug</em></li>
-      </ul>
+    <div class="box">
+      <h3>inspect-product <span style="color:#7cc4ff;font-size:13px">new</span></h3>
+      <p class="sub" style="margin:8px 0 10px">Audit a whole product, not one bug. The agent walks your running app as a brand-new user, observes the runtime underneath it, and returns ranked findings that each carry a reproduction and proof.</p>
+      <pre>"review the product and tell me
+ what to fix before launch"</pre>
     </div>
   </div>
-</section>
-
-<section class="plate" aria-labelledby="plate-title">
-  <h2 id="plate-title" data-r>No evidence, no claim.</h2>
-  <div class="plate-grid">
-    <ul class="notes notes-l">
-      <li data-k="sev" tabindex="0"><b>Severity</b>High, warn or info, so the worst thing is read first.</li>
-      <li data-k="ev" tabindex="0"><b>Evidence ids</b>A finding without them is rejected before it reaches the agent.</li>
-      <li data-k="conf" tabindex="0"><b>Observed or inferred</b>Read straight off the tool, or a reasoning step labelled as one.</li>
-    </ul>
-    <article class="finding" data-ui aria-label="A finding from a real session">
-      <p class="fd-row" data-k="sev"><span class="sev warn">WARN</span> <code translate="no">snapshot_memory#5</code></p>
-      <p class="fd-title">Array retains 87.7 MB = 93% of the heap, held by Context.retained</p>
-      <p class="fd-row" data-k="conf"><span class="pill-k">observed</span></p>
-      <div class="fd-ev" data-k="ev">
-        <p><code translate="no">e5</code> top retainers: Array retains 87.7 MB via system / Context.retained</p>
-        <p><code translate="no">e3</code> heap 94.4 MB in 80k objects; string, native, code</p>
-      </div>
-      <div class="fd-lim" data-k="lim"><p>Limitations</p><p>RSS sampled 7× over 3 s. Retained sizes are a reachability approximation.</p></div>
-      <p class="fd-art" data-k="art"><code translate="no">~/.debuganything/sessions/…/heap.heapsnapshot</code> 7.5 MB</p>
-      <p class="fd-next" data-k="next">Next: <code translate="no">snapshot_memory</code> after load, then <code translate="no">diff_runs</code></p>
-    </article>
-    <ul class="notes notes-r">
-      <li data-k="lim" tabindex="0"><b>Limitations</b>What it could not see: sampled, no symbols, no root.</li>
-      <li data-k="art" tabindex="0"><b>Artifact</b>The raw output on disk. Open it; the same bytes the agent saw.</li>
-      <li data-k="next" tabindex="0"><b>Next step</b>What to measure next, so the agent doesn't guess.</li>
-    </ul>
+  <div class="box" style="margin-top:18px">
+    <h3>What inspect-product refuses to do</h3>
+    <p class="sub" style="margin:8px 0 0">Generic advice counts as failure. Every finding names the steps, what was observed and where it lives — if it can't be reproduced it is filed as a question, not a finding. It checks the things reviews skip: what one user costs you at ten times the usage, whether a free account can be farmed, and whether you can even measure if people come back.</p>
   </div>
-</section>
+</div></section>
 
-<section class="pin" id="unprompted" aria-labelledby="pin-title">
-  <div class="pin-text">
-    <h2 id="pin-title">You stop asking.</h2>
-    <ol class="pin-steps">
-      <li data-step="0"><b>A command fails.</b> Your dev server won't start: <code translate="no">EADDRINUSE :::3000</code>.</li>
-      <li data-step="1"><b>A 40 ms hook spots the signal.</b> In Claude Code, it reads command output and nudges the agent toward the right tool.</li>
-      <li data-step="2"><b>The agent goes to look.</b> One call names the process holding the port. It never kills it for you.</li>
-    </ol>
+<section id="install"><div class="wrap">
+  <div class="eyebrow">Everywhere your agent is</div>
+  <h2>One line, any agent.</h2>
+  <div class="inst reveal">
+    <div class="box"><h3>MCP · Claude Code, Cursor, Codex, Gemini CLI</h3><pre><b>npx</b> debuganything setup</pre></div>
+    <div class="box"><h3>Your repo, your whole team</h3><pre><b>debuganything</b> init   <span class="dim" style="color:#5f6878"># commit .mcp.json, .cursor/mcp.json, AGENTS.md</span></pre></div>
+    <div class="box"><h3>No agent? One command</h3><pre><b>debuganything</b> why 12345 --symptom slow</pre></div>
+    <div class="box"><h3>Agent skill</h3><pre><b>npx</b> skills add shreyassaw5394/debuganything</pre></div>
+    <div class="box"><h3>Python · LangChain · LlamaIndex · CrewAI</h3><pre><b>pip</b> install 'debuganything[langchain]'
+from debuganything.langchain import debuganything_tools</pre></div>
+    <div class="box"><h3>One click</h3><pre><a href="https://cursor.com/en/install-mcp?name=debuganything&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImRlYnVnYW55dGhpbmdAbGF0ZXN0Iiwic2VydmUiXX0=">Install in Cursor →</a>
+<a href="https://vscode.dev/redirect/mcp/install?name=debuganything&config=%7B%22name%22%3A%22debuganything%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22debuganything%40latest%22%2C%22serve%22%5D%7D">Install in VS Code →</a></pre></div>
+    <div class="box"><h3>Claude Code plugin · Gemini extension</h3><pre>/plugin marketplace add shreyassaw5394/debuganything
+/plugin install debuganything@debuganything
+gemini extensions install https://github.com/shreyassaw5394/debuganything</pre></div>
+    <div class="box"><h3>Any MCP client</h3><pre>{"command":"npx","args":["-y","debuganything@latest","serve"]}</pre></div>
   </div>
-  <div class="pin-stage">
-    <pre class="term" data-ui id="pin-term" aria-live="polite"><span class="t-p">$ npm run dev</span>
-Error: listen EADDRINUSE: address already in use :::3000</pre>
+</div></section>
+
+<section id="safety" style="padding-top:40px"><div class="wrap">
+  <div class="eyebrow">Safety</div>
+  <h2>It only looks.</h2>
+  <div class="safe">
+    <div><b>Read-only</b>Never kills, signals, patches or sets breakpoints.</div>
+    <div><b>No sudo, ever</b>Needs root? You get the exact command, not an escalation.</div>
+    <div><b>Hard caps</b>60 s per tool, 50 MB raw, 16 KB to the agent.</div>
+    <div><b>Consent</b>Packet capture needs an explicit yes, every time.</div>
+    <div><b>Redacted</b>Tokens, keys, passwords scrubbed from what the agent sees.</div>
+    <div><b>Local only</b>No cloud, no telemetry, no update checks.</div>
   </div>
-</section>
+  <p class="meta"><a href="docs/safety.md">docs/safety.md</a> · <a href="docs/DISCLAIMER.md">Only observe systems you are authorized to debug.</a></p>
+</div></section>
 
-<section class="works" aria-label="Works with">
-  <p><span class="works-k">Works with</span><span>Claude Code</span><span>Cursor</span><span>Codex</span><span>Gemini CLI</span><span>VS Code</span><span>LangChain</span></p>
-</section>
 
-<section class="new" aria-labelledby="new-title">
-  <h2 id="new-title" data-r>New in October.</h2>
-  <div class="new-grid">
-    <figure class="new-pic" data-r><img src="/media/analyzer.jpg" width="1400" height="636" alt="The browser analyzer showing two findings from a pasted Python thread dump" loading="lazy"><figcaption>The analyzer reads pasted tool output in your browser. Nothing is uploaded.</figcaption></figure>
-    <ul class="new-list">
-      <li data-r><b>The inspect-product skill.</b> The agent signs up fresh, walks the real path and watches the server while it does. Each finding carries a reproduction.</li>
-      <li data-r><b>Java and Go.</b> JVM thread dumps and goroutine dumps, live or pasted.</li>
-      <li data-r><b>Reports you can send.</b> <code translate="no">debuganything report --html</code> writes one file with findings and flamegraphs.</li>
-      <li data-r><b>Compare with a healthy run.</b> Record a baseline, then diff a broken session against it.</li>
-      <li data-r><b>When CI hangs.</b> The <a href="https://github.com/shreyassaw5394/debuganything-action">GitHub Action</a> attaches before the kill and uploads stacks and findings.</li>
-    </ul>
+<section id="community" style="padding-top:40px"><div class="wrap">
+  <div class="eyebrow">Community</div>
+  <h2>Built in the open. Numbers live.</h2>
+  <div class="tiles reveal" id="stats" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+    <a class="tile" href="https://github.com/shreyassaw5394/debuganything/stargazers"><div class="num" id="st-stars">—</div><p>GitHub stars</p></a>
+    <a class="tile" href="https://github.com/shreyassaw5394/debuganything/network/members"><div class="num" id="st-forks">—</div><p>Forks</p></a>
+    <a class="tile" href="https://www.npmjs.com/package/debuganything"><div class="num" id="st-npm">—</div><p>npm downloads · 30 days</p></a>
+    <a class="tile" href="https://pypi.org/project/debuganything/"><div class="num" id="st-pypi">—</div><p>PyPI downloads · 30 days</p></a>
+    <a class="tile" href="https://github.com/shreyassaw5394/debuganything/graphs/contributors"><div class="num" id="st-contrib">—</div><p>Contributors</p></a>
+    <a class="tile" href="https://discord.gg/htPuQ5grg"><div class="num">💬</div><p>Discord</p></a>
   </div>
-</section>
+  <h3 style="margin-top:36px;font-size:18px">Top contributors</h3>
+  <p class="meta" style="margin-top:6px">Land a pull request (an adapter, a fixture, a doc) and you appear here automatically.</p>
+  <div class="wall" id="wall"><span class="dim" style="color:var(--dim)">loading…</span></div>
+</div></section>
 
-<section class="faq" id="faq" aria-labelledby="faq-title">
-  <h2 id="faq-title" data-r>Questions.</h2>
-  <div class="faq-list">
-    <details name="faq" data-r><summary>Is it safe to point at my app?<span class="pm" aria-hidden="true"></span></summary><p>It only looks. It never kills, signals, patches or sets breakpoints, never uses sudo, caps each tool at 60 s and 50 MB, sends the agent at most 16 KB, scrubs tokens and keys, and asks every time before a packet capture. Nothing leaves your machine. Only observe systems you own or are allowed to debug. <a href="docs/safety.md">Safety details</a>.</p></details>
-    <details name="faq" data-r><summary>Does it need root?<span class="pm" aria-hidden="true"></span></summary><p>Most tools don't. When one does, Debug Anything prints the exact command for you to run, then reads the file with <code translate="no">debuganything import</code>. It never escalates on its own.</p></details>
-    <details name="faq" data-r><summary>Can I use it without an AI agent?<span class="pm" aria-hidden="true"></span></summary><p>Yes. <code translate="no">debuganything why 12345 --symptom slow</code> attaches, runs the right tools and prints ranked findings. Or paste tool output into the <a href="/analyze">analyzer</a>.</p></details>
-    <details name="faq" data-r><summary>How does my team use it?<span class="pm" aria-hidden="true"></span></summary><p><code translate="no">debuganything init</code> commits the agent config and a rule to the repo, so every teammate's agent has it. Fixes carry run ids in pull requests, and CI can fail a job when memory grows. <a href="docs/workflows.md">Workflow guide</a>.</p></details>
-    <details name="faq" data-r><summary>What do the two skills do?<span class="pm" aria-hidden="true"></span></summary><p><b>debug-anything</b> tells your agent when to look: a hang, a busy port, an out-of-memory kill, or you saying “slow”. <b>inspect-product</b> audits a whole product as a new user and reports findings with reproductions. <code translate="no">npx debuganything setup</code> installs both.</p></details>
-    <details name="faq" data-r><summary>How sure are the findings?<span class="pm" aria-hidden="true"></span></summary><p>Each finding says whether it was observed or inferred and lists what the tools could not see. They are automated diagnostics, not professional advice: read the evidence before you act on it.</p></details>
-  </div>
-</section>
+<footer><div class="wrap">
+  <img src="logo.svg" alt="" width="28" height="28" style="border-radius:8px"><span>Debug Anything · MIT</span>
+  <div class="links"><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://www.npmjs.com/package/debuganything">npm</a><a href="https://pypi.org/project/debuganything/">PyPI</a><a href="https://discord.gg/htPuQ5grg">Discord</a><a href="docs/README.md">Docs</a><a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Disclaimer</a><a href="/privacy">Privacy</a><a href="#" data-cookie-settings>Cookie settings</a></div>
+</div>
+<div class="wrap" style="margin-top:14px;font-size:12.5px;line-height:1.6">Provided "as is", without warranty of any kind; the authors accept no liability for any damage arising from use. Only observe systems you own or are explicitly authorized to debug — you are solely responsible for authorization and legal compliance. Findings are automated diagnostics, not professional advice. An independent open-source project by individual contributors, unaffiliated with any employer or with the third-party tools it orchestrates. <a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Full disclaimer</a>.</div></footer>
 
-<section class="cta" id="start" aria-labelledby="cta-title">
-  <div class="cta-text">
-    <h2 id="cta-title">Ask it why.</h2>
-    <p>The command attaches, picks the tools for the symptom, writes a report and detaches. Set it up for your agent with <code translate="no">npx debuganything setup</code>, or run it yourself.</p>
-  </div>
-  <form class="dialog" id="why" data-ui>
-    <p class="dialog-title">Investigate a process</p>
-    <label for="why-pid">Process id</label>
-    <input id="why-pid" name="pid" value="61326" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="12">
-    <p class="dialog-label" id="sym-label">Symptom</p>
-    <div class="seg" role="radiogroup" aria-labelledby="sym-label">
-      <button type="button" role="radio" aria-checked="true" data-v="slow">Slow</button>
-      <button type="button" role="radio" aria-checked="false" data-v="hang" tabindex="-1">Hangs</button>
-      <button type="button" role="radio" aria-checked="false" data-v="leak" tabindex="-1">Leaks</button>
-      <button type="button" role="radio" aria-checked="false" data-v="crash" tabindex="-1">Crashes</button>
-    </div>
-    <code class="dialog-cmd" id="why-cmd" translate="no">npx debuganything why 61326 --symptom slow</code>
-    <button type="submit" class="dialog-go">Copy command</button>
-  </form>
-</section>
-<p class="sr" id="live" role="status" aria-live="polite"></p>
-</main>
+<script>
+(function(){
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const color=l=>{
+  l=esc(l);
+  return l.replace(/^(\$ .*)$/,'<span class="prompt">$1</span>')
+   .replace(/^(✔ \S+)/,'<span class="ok">$1</span>').replace(/\bHIGH\b/,'<span class="high">HIGH</span>').replace(/\bWARN\b/,'<span class="warn">WARN</span>').replace(/\bINFO\b/,'<span class="info">INFO</span>')
+   .replace(/(\[(observed|inferred); [^\]]+\])/g,'<span class="ev">$1</span>').replace(/^(\s*e\d+ .*)$/,'<span class="dim">$1</span>').replace(/^(#.*)$/,'<span class="c">$1</span>');
+};
+// ---- hero replay (real session, macOS) ----
+const session=[
+"$ S=$(debuganything attach 61326 --json | jq -r .session_id)",
+"$ debuganything memory --session $S",
+"✔ snapshot_memory (snapshot_memory#2)  1.6 s",
+"  INFO  RSS 48.0 MB, stable over 1s [observed; e1,e2]",
+"$ node load.js 400   # 400 requests to /work",
+"$ debuganything memory --session $S",
+"✔ snapshot_memory (snapshot_memory#3)  1.4 s",
+"  INFO  RSS 273.0 MB, stable over 1s [observed; e1,e2]",
+"  WARN  Array (object) retains 50.1 MB = 87% of the heap, held by system / Context.retained [observed; e5,e3]",
+"$ debuganything diff --session $S snapshot_memory#2 snapshot_memory#3",
+"✔ diff_runs (diff_runs#4)  2 ms",
+"  WARN  name=rss grew 48.0 MB → 273.0 MB (+468%) [observed; e2,e1]",
+"  HIGH  heap_summary: name=heap_total grew 6.8 MB → 57.5 MB [observed; e3,e1]",
+"  HIGH  heap_retainer: name=Array grew 2.0 KB → 50.1 MB [observed; e4,e1]",
+"# the leak: a module-level array called `retained`. evidence: diff_runs#4/e4"
+];
+const replay=document.getElementById('replay');
+function typeLines(el,lines,opts,done){
+  if(reduce){el.innerHTML=lines.map(color).join('\n');done&&done();return;}
+  let i=0;el.innerHTML='';
+  const next=()=>{
+    if(i>=lines.length){done&&done();return;}
+    const line=lines[i++];const isCmd=line.startsWith('$ ');
+    if(isCmd){let j=0;const span=document.createElement('span');el.appendChild(span);const cur=document.createElement('span');cur.className='cursor';el.appendChild(cur);
+      const t=setInterval(()=>{j++;span.innerHTML=color(line.slice(0,j));if(j>=line.length){clearInterval(t);cur.remove();el.appendChild(document.createTextNode('\n'));setTimeout(next,opts.after||350);}},opts.speed||22);
+    } else {const d=document.createElement('span');d.innerHTML=color(line)+'\n';el.appendChild(d);setTimeout(next,line.startsWith('✔')?120:line.trim().startsWith('#')?900:170);}
+  };next();
+}
+function loopReplay(){typeLines(replay,session,{},()=>setTimeout(loopReplay,6000));}
+loopReplay();
+// ---- pipeline animation ----
+const pipe=document.querySelector('.pipe');
+function animatePipe(){const seq=[['n1'],['f1'],['n2'],['f2','f3','f4','f5','f6'],['n3'],['f7','f8','f9','f10','f11'],['n4'],['f12'],['n5']];
+  seq.forEach((ids,k)=>setTimeout(()=>ids.forEach(id=>{const g=document.getElementById(id);if(!g)return;if(id[0]==='n')g.querySelectorAll('.node').forEach(n=>n.classList.add('lit'));else g.classList.add('on');}),k*350));
+  setTimeout(()=>{document.querySelectorAll('.pipe .lit').forEach(n=>n.classList.remove('lit'));document.querySelectorAll('.pipe .flow.on').forEach(n=>n.classList.remove('on'));setTimeout(animatePipe,1200);},seq.length*350+2600);}
+// ---- incident console ----
+const incidents=[
+ {ic:'🔌',t:'EMFILE at 2 am',plain:'The app slowly runs out of “hands” to hold connections because it never lets go of the old ones.',s:'CLOSE_WAIT pileup behind the load balancer',sym:'500s a few hours after deploy. Logs say <em>EMFILE: too many open files</em>. Restart fixes it.',cmd:'debuganything sockets --session $S\ndea files   --session $S --window 10',out:['HIGH  412 sockets in CLOSE_WAIT — the peer closed and the target never called close() [inferred; e2]','HIGH  980 fds open vs soft limit 1024 (96%) — EMFILE imminent [observed; e4]','e3   socket  top remotes: 10.0.3.17 ×388 (CLOSE_WAIT 371)   ← the load balancer'],fix:'Keep-alive timeout longer than the LB idle timeout. Set the server below it, or handle close/timeout on the socket. Prove: CLOSE_WAIT=3 after.'},
+ {ic:'💽',t:'Disk full, du disagrees',plain:'A huge log file was deleted but the app is still holding it open, so the space never comes back.',s:'Deleted-but-open log file',sym:'/var is 100% full. <em>du</em> says 40 GB free. Deleting files frees nothing.',cmd:'debuganything files --session $S',out:['HIGH  1 file(s) deleted while still open hold 38.2 GB of disk — "disk full but nothing there" [observed; e5]','e5   fd  /var/log/app/app.log.1 (deleted)  fd 7  38.2 GB'],fix:'logrotate deleted it; the process still holds fd 7. copytruncate, or send the reopen signal. Debug Anything names the pid and fd; it will not truncate it for you.'},
+ {ic:'🐘',t:'Postgres: too many connections',plain:'Every worker opens its own line to the database and never shares, so the database runs out of lines.',s:'Pool exhaustion in a Django app',sym:'Under load, requests queue. Postgres shows 100/100 connections. p99 at 8 s.',cmd:'debuganything sockets --session $S\ndea trace   --session $S --duration 10 --categories network',out:['WARN  64 connections to 10.0.5.9 — pool exhaustion or missing reuse [inferred; e3]','WARN  18× connect failed with ECONNREFUSED — downstream not accepting connections [observed; e3]','INFO  recvfrom dominates: 7 412 ms over 211 calls (91% of kernel time) [observed; e1,e2]'],fix:'Each worker opens its own connections (CONN_MAX_AGE=0). pgbouncer in front, or CONN_MAX_AGE, and cap workers × pool below max_connections.'},
+ {ic:'🧊',t:'Celery worker just stops',plain:'Two workers each wait for the other to finish first. Neither ever does. Classic deadlock.',s:'Deadlock after a refactor (real lab output)',sym:'Throughput drops to zero every few hours. CPU idle. Restart fixes it.',cmd:'debuganything why 5570 --symptom hang',out:['HIGH  likely deadlock: 42 thread(s) blocked acquiring locks and no thread is running — worker-ab-20 at worker_ab (app.py:38) [with lock_b:]; worker-ba-20 at worker_ba (app.py:45) [with lock_a:] [inferred; e14,e1]','e1   stack_summary  64 thread(s): 0 active, 64 idle'],fix:'Two paths take lock_a / lock_b in opposite order. The source lines in brackets are read from the process\'s own files.'},
+ {ic:'🐢',t:'p99 of 1.4 s on one core',plain:'The app reads a file from disk on every request instead of once. Most requests are fast; some wait behind the slow ones.',s:'Blocked Node event loop (real lab output)',sym:'p50 is 20 ms, p99 is 1.4 s, one core pegged in bursts.',cmd:'debuganything profile --session $S --duration 10\ndea trace   --session $S --duration 8 --categories file',out:['WARN  18000 path lookups (open/stat) in 8s — filesystem churn [inferred; e1]','WARN  9274 read() calls in 8s (avg 0.104 ms) — sync I/O in a loop? [inferred; e1]','WARN  __arch_copy_to_user accounts for 58.3% of CPU work; CPU-busy ≈22% of the time [observed; e1,e2,e3]'],fix:'readFileSync on the request path. Move it to a worker thread or stream it; cache the file.'},
+ {ic:'💥',t:'Pod OOMKilled every few hours',plain:'A list that only ever grows. The container hits its memory limit and gets killed. Restart, repeat.',s:'A quiet leak (real numbers from the leaky-node demo)',sym:'Kubernetes shows <em>OOMKilled</em>, restart count climbing. Nothing in the app logs.',cmd:'debuganything container --session $S\ndea memory --session $S   # twice, then diff',out:['HIGH  container was OOM-killed (State.OOMKilled=true) [observed; e1,e2]','WARN  Array (object) retains 50.1 MB = 87% of the heap, held by system / Context.retained [observed; e5,e3]','HIGH  heap_retainer: name=Array grew 2.0 KB → 50.1 MB [observed; e4,e1]'],fix:'A module-level cache that is only appended to. Bound it (LRU, TTL). Open the .heapsnapshot in DevTools for the full tree.'},
+ {ic:'🌐',t:'Latency spikes every 30 s',plain:'The app looks up the partner\'s address on every single call instead of remembering it.',s:'DNS on every request',sym:'Calls to a partner API are fast, then 300–900 ms.',cmd:'debuganything capture --session $S --duration 10 --consent\ndea sockets --session $S',out:['WARN  api.partner.com resolved 212× in 10s — no DNS caching [inferred; e4]','WARN  127 sockets in TIME_WAIT — connection churn (no keep-alive?) [inferred; e2]'],fix:'New connection and lookup per request. Keep-alive agent and a resolver cache.'},
+ {ic:'🚪',t:'EADDRINUSE after a crash',plain:'A previous copy of your dev server is still running and sitting on the port. Debug Anything tells you which one.',s:'Orphaned dev server (real output)',sym:'<em>npm run dev</em> fails with EADDRINUSE :3000. Nothing obvious is running.',cmd:'debuganything port 3000',out:['HIGH  port 3000 is held by pid 61326 (node, user shreyas) in LISTEN [observed; e1,e2]','      command: node server.js. Debug Anything will not kill it; decide yourself.'],fix:'An orphaned child from the previous run. Debug Anything names it; you kill it.'}
+];
+const clist=document.getElementById('clist'),cpane=document.getElementById('cpane');let cur=0,timer,prog;
+incidents.forEach((inc,i)=>{const d=document.createElement('div');d.className='item';d.innerHTML=`<span class="ic">${inc.ic}</span><div>${inc.t}<small>${inc.s}</small></div>`;d.onclick=()=>{show(i);restart();};clist.appendChild(d);});
+function show(i){cur=i;[...clist.children].forEach((c,k)=>c.classList.toggle('on',k===i));const inc=incidents[i];
+  cpane.innerHTML=`<div class="sym">${inc.t} <em>— ${inc.sym}</em></div>
+   <div class="step"><div class="tag">in plain words</div><div class="fix" style="color:#eef2f8">${inc.plain||''}</div></div>
+   <div class="step"><div class="tag">session</div><pre>${esc(inc.cmd)}</pre></div>
+   <div class="step"><div class="tag">evidence</div><pre>${inc.out.map(l=>color(l)).join('\n')}</pre></div>
+   <div class="step"><div class="tag">fix</div><div class="fix">${inc.fix}</div></div>
+   <div class="bar"><i id="prog"></i></div>`;
+  const steps=cpane.querySelectorAll('.step');steps.forEach((s,k)=>setTimeout(()=>s.classList.add('in'),reduce?0:150+k*350));
+  const bar=document.getElementById('prog');let p=0;clearInterval(prog);if(!reduce)prog=setInterval(()=>{p+=1;bar.style.width=p+'%';if(p>=100)clearInterval(prog);},80);}
+function restart(){clearInterval(timer);if(!reduce)timer=setInterval(()=>show((cur+1)%incidents.length),8200);}
+show(0);restart();document.getElementById('console').addEventListener('mouseenter',()=>clearInterval(timer));document.getElementById('console').addEventListener('mouseleave',restart);
+// ---- evidence chain hover ----
+document.querySelectorAll('#chain .box').forEach(b=>{b.addEventListener('mouseenter',()=>document.querySelectorAll('#chain .box').forEach(x=>x.classList.toggle('lit',x.dataset.l<=b.dataset.l)));b.addEventListener('mouseleave',()=>document.querySelectorAll('#chain .box').forEach(x=>x.classList.remove('lit')));});
+// ---- proactive animation ----
+const pro=document.getElementById('pro-term'),toast=document.getElementById('toast');
+const proLines=["$ npm run dev","> vite","Error: listen EADDRINUSE: address already in use :::3000","    at Server.setupListenHandle [as _listen2] (node:net:1908:16)"];
+const proAfter=["$ debuganything port 3000","✔ inspect_sockets  81 ms","  HIGH  port 3000 is held by pid 61326 (node) in LISTEN [observed; e1,e2]","        command: node server.js. Debug Anything will not kill it; decide yourself.","# the agent found the owner in one call — you never asked."];
+function proLoop(){toast.classList.remove('show');typeLines(pro,proLines,{speed:18,after:250},()=>{setTimeout(()=>toast.classList.add('show'),400);setTimeout(()=>{toast.classList.remove('show');const d=document.createElement('span');pro.appendChild(d);typeLines(d,proAfter,{speed:18,after:250},()=>setTimeout(proLoop,6000));},2600);});}
 
-<footer class="foot">
-  <div class="tile t-state"><p>An independent, open-source project. MIT licensed.</p><p class="legal">Provided “as is”, without warranty of any kind; the authors accept no liability for damage arising from use. Only observe systems you own or are explicitly authorized to debug; you are responsible for authorization and legal compliance. Findings are automated diagnostics, not professional advice. Unaffiliated with any employer or with the third-party tools it runs. <a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Full disclaimer</a>.</p></div>
-  <nav class="tile t-nav" aria-label="Footer"><a href="docs/README.md">Docs</a><a href="/analyze">Analyzer</a><a href="https://github.com/shreyassaw5394/debuganything">GitHub</a><a href="https://www.npmjs.com/package/debuganything">npm</a><a href="https://pypi.org/project/debuganything/">PyPI</a><a href="https://discord.gg/htPuQ5grg">Discord</a><a href="/privacy">Privacy</a><a href="/fonts/OFL-IBMPlexSans.txt">Font licences</a><a href="#" data-cookie-settings>Cookie settings</a></nav>
-  <div class="tile t-stats"><p class="stat"><b id="st-stars">–</b> GitHub stars</p><p class="stat"><b id="st-npm">–</b> npm, 30 days</p><p class="stat"><b id="st-pypi">–</b> PyPI, 30 days</p><p class="stat"><b id="st-contrib">–</b> <a href="https://github.com/shreyassaw5394/debuganything/graphs/contributors">contributors</a></p></div>
-  <div class="tile t-mark"><p>Debug Anything</p></div>
-  <a class="tile t-go" href="/analyze"><span>Open the analyzer</span><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 38 38 10M16 10h22v22"/></svg></a>
-</footer>
+// ---- live community numbers (served from this site; the browser contacts no third party) ----
+(async()=>{
+  const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'k':String(n);
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  const escA=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  let st=null;try{const r=await fetch('/api/stats');st=r.ok?await r.json():null;}catch{}
+  if(st&&st.stars!=null){set('st-stars',fmt(st.stars));set('st-forks',fmt(st.forks??0));}
+  set('st-npm',st&&typeof st.npm==='number'?fmt(st.npm):'new');
+  set('st-pypi',st&&typeof st.pypi==='number'?fmt(st.pypi):'new');
+  const wall=document.getElementById('wall');
+  const c=st&&Array.isArray(st.contributors)?st.contributors:[];
+  if(c.length){set('st-contrib',fmt(c.length));wall.innerHTML=c.map(p=>`<a href="${escA(p.url)}" title="${p.contributions} commits">${p.avatar&&p.avatar.startsWith('data:image/')?`<img src="${escA(p.avatar)}" alt="">`:''}${escA(p.login)}<small>${p.contributions}</small></a>`).join('');}
+  else wall.innerHTML='<a href="https://github.com/shreyassaw5394/debuganything/graphs/contributors">see contributors on GitHub</a>';
+})();
+
+// ---- reveals & observers ----
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add('in');
+  if(e.target===pipe&&!pipe.dataset.go){pipe.dataset.go=1;if(!reduce)animatePipe();else document.querySelectorAll('.pipe .node').forEach(n=>n.classList.add('lit'));}
+  if(e.target.id==='tl')e.target.querySelectorAll('.st').forEach((s,k)=>setTimeout(()=>s.classList.add('in'),k*140));
+  if(e.target.id==='proactive'&&!e.target.dataset.go){e.target.dataset.go=1;proLoop();}
+}),{threshold:.2});
+document.querySelectorAll('.reveal,#tl,#proactive').forEach(el=>io.observe(el));
+})();
+</script>
+<script src="/consent.js" defer></script>
 </body>
 </html>
