@@ -71,7 +71,7 @@ h2{font-size:var(--x-head);max-width:20ch}
 .term{background:#07080a;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--s2)}
 .term figcaption{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:var(--s1);font-size:var(--x-small);color:var(--muted)}
 .term pre{margin:0;padding:20px 22px 24px;font-size:12.5px;line-height:1.8;color:#cfd3da;white-space:pre-wrap;word-break:break-word;min-height:420px}
-.t-cmd{color:#fff}.t-ok{color:var(--ok)}.t-info{color:var(--acc)}.t-warn{color:var(--warn)}.t-high{color:var(--high)}.t-ev{color:#8a8f99}.t-note{color:#8a8f99}
+.t-cmd{color:#fff}.t-ok{color:var(--ok)}.t-info{color:var(--acc)}.t-warn{color:var(--warn)}.t-high{color:var(--high)}.t-ev{color:#8a8f99;white-space:nowrap}.t-note{color:#8a8f99}
 .caret{display:inline-block;width:8px;height:1.1em;background:var(--acc);vertical-align:-3px;margin-left:2px}
 .proof{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,4vw,56px);margin-top:clamp(64px,8vw,104px)}
 .proof b{display:block;font-size:clamp(30px,3.2vw,44px);font-weight:600;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
