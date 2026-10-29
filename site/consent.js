@@ -8,11 +8,11 @@
   let loaded = false;
   const load = () => { if (loaded) return; loaded = true; const s = document.createElement("script"); s.defer = true; s.src = "/_vercel/insights/script.js"; document.head.appendChild(s); };
 
-  const css = `#dea-consent{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:1000;max-width:600px;margin:0 auto;background:#16242b;color:#e6eef1;border-radius:6px;padding:18px 20px;font:15px/1.5 "Erode",Georgia,serif}
-#dea-consent p{margin:0 0 14px;color:#c9d6db}#dea-consent a{color:#fff}
+  const css = `#dea-consent{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:1000;max-width:600px;margin:0 auto;background:rgba(22,22,24,.78);color:#f4f4f2;border-radius:16px;padding:18px 20px;font:15px/1.5 "Archivo",ui-sans-serif,system-ui,sans-serif;-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.2);box-shadow:inset 1px 1px 0 rgba(255,255,255,.4),0 18px 40px -18px rgba(0,0,0,.75)}
+#dea-consent p{margin:0 0 14px;color:#d6d5d0}#dea-consent a{color:#fff}
 #dea-consent .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-#dea-consent button{font:600 14px/1 inherit;font-family:inherit;padding:11px 18px;border-radius:6px;border:0;background:#2a3b43;color:#e6eef1;cursor:pointer;min-width:110px;min-height:44px}
-#dea-consent button[data-a="1"]{background:#f7f9fa;color:#1f3038}
+#dea-consent button{font:600 14px/1 inherit;font-family:inherit;padding:11px 18px;border-radius:10px;border:0;background:rgba(255,255,255,.12);color:#f4f4f2;cursor:pointer;min-width:110px;min-height:44px}
+#dea-consent button[data-a="1"]{background:var(--acc,#3b5bff);color:var(--acc-ink,#fff)}
 #dea-consent button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(max-width:520px){#dea-consent button{flex:1}}`;
 
