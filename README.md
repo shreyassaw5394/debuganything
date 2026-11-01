@@ -13,7 +13,7 @@ One MCP server and CLI that gives any coding agent — Claude Code, Codex, Curso
 [![npm downloads](https://img.shields.io/npm/dm/debuganything.svg?label=npm%20downloads)](https://www.npmjs.com/package/debuganything)
 [![PyPI downloads](https://img.shields.io/pypi/dm/debuganything.svg?label=pypi%20downloads)](https://pypi.org/project/debuganything/)
 [![GitHub stars](https://img.shields.io/github/stars/shreyassaw5394/debuganything.svg?style=flat&label=stars)](https://github.com/shreyassaw5394/debuganything/stargazers)
-[![Discord](https://img.shields.io/badge/discord-join-5865F2)](https://discord.gg/htPuQ5grg)
+[![Discord](https://img.shields.io/badge/discord-join-5865F2)](https://discord.gg/s8wj7tBAM)
 
 [Quick start](#quick-start) · [How Debug Anything works](#how-debug-anything-works) · [What you can observe](#what-you-can-observe) · [Showcases](#showcases) · [Workflows](docs/workflows.md) · [Python / LangChain / CrewAI](#python-langchain-llamaindex-crewai) · [Safety](#safety) · [FAQ](#faq) · [Roadmap](#roadmap) · [Community](#community)
 
@@ -25,7 +25,7 @@ One command against any pid, container or pod: attach → the right tools for th
 
 ![Debug Anything finding a Node.js leak: two memory snapshots, a diff, and the retainer named with evidence ids](docs/demo.gif)
 
-> Website: <https://debuganything.dev> · Community: [Discord](https://discord.gg/htPuQ5grg) · [Discussions](https://github.com/shreyassaw5394/debuganything/discussions) · Only ever download Debug Anything from this repo, the `debuganything` npm/PyPI packages, or that site.
+> Website: <https://debuganything.dev> · Community: [Discord](https://discord.gg/s8wj7tBAM) · [Discussions](https://github.com/shreyassaw5394/debuganything/discussions) · Only ever download Debug Anything from this repo, the `debuganything` npm/PyPI packages, or that site.
 
 ## Where Debug Anything sits
 
@@ -263,7 +263,7 @@ bpftrace canned scripts · Kubernetes pods via ephemeral debug containers · Win
 
 ## Community
 
-- **Discord:** <https://discord.gg/htPuQ5grg> — questions, show-and-tell, help reading a session.
+- **Discord:** <https://discord.gg/s8wj7tBAM> — questions, show-and-tell, help reading a session.
 - **Discussions:** <https://github.com/shreyassaw5394/debuganything/discussions> — longer-form ideas and RFCs.
 - **Issues:** bugs and adapter requests via the templates. **Discussions** for ideas.
 - **Security:** private advisories only, see [SECURITY.md](SECURITY.md).

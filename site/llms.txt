@@ -23,4 +23,4 @@ Providers: strace, py-spy, perf, lsof, tcpdump, gdb, lldb, sample (macOS), Node 
 - Source: https://github.com/shreyassaw5394/debuganything
 - npm: https://www.npmjs.com/package/debuganything
 - PyPI: https://pypi.org/project/debuganything/
-- Discord: https://discord.gg/htPuQ5grg
+- Discord: https://discord.gg/s8wj7tBAM
