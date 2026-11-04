@@ -13,8 +13,15 @@ Documented side effects:
 
 - `snapshot_memory` / `dump_stacks` on a Node target may send **SIGUSR1** to
   enable Node's inspector when it is not already listening. This is Node's
-  documented mechanism; the inspector stays on until the process exits. The
-  result's `limitations` says so.
+  documented mechanism; the inspector stays on until the process exits and
+  accepts connections from any local process that can reach that loopback
+  port. It happens only with `consent: true`, and the result carries a `warn`
+  finding when it did. Debug Anything only connects to an inspector port owned
+  by the target's own pid tree.
+- `attach` spawns a program only when called with `kind: "command"`.
+- `report --out` writes only a `.md` file inside the current directory or the
+  session directory, and never over a symlink or a file that is not an earlier
+  Debug Anything report.
 - `ptrace`-based tools (`strace`, `gdb`, `lldb`, `py-spy`) stop the target
   briefly while attaching/reading. `dump_stacks` typically pauses for < 1 s.
 
@@ -59,9 +66,13 @@ detached sessions older than 7 days (`--all` for everything).
 
 Everything returned to the agent (evidence summaries, data, findings, report)
 passes through `redact()`: Bearer tokens, AWS keys, JWTs, `password=`,
-`api_key=`, Stripe/GitHub/Slack tokens, private keys, and `user:pass@` in
-URLs. **Raw artifacts on disk are not redacted** — `.pcap`, `.heapsnapshot`
-and strace logs can contain secrets. Treat the sessions directory as sensitive.
+`api_key=`, `--password <value>`-style flags, cookies, Basic auth,
+Stripe/GitHub/Slack tokens, private keys, and `user:pass@` in URLs of any
+scheme. This is best-effort pattern matching. **Raw artifacts on disk are not
+redacted** — `.pcap`, `.heapsnapshot` and strace logs can contain secrets.
+Session directories are created `0700` and files `0600` (Debug Anything runs
+with a `077` umask, so `tcpdump`/`strace`/`perf` output inherits it). Python
+local variable values are only collected with `locals: true`.
 
 ## Proactive hook
 

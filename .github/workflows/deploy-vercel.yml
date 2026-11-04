@@ -24,8 +24,12 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: npm i -g vercel@latest
+      - run: npm i -g vercel@65.2.0
       # Remote build on Vercel (same path as `vercel deploy --prod` from a laptop); vercel.json holds the build settings.
-      - run: vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+      - run: vercel deploy --prod --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

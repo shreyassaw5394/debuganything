@@ -50,7 +50,7 @@ export class ResultBuilder {
       return path;
     }
     const path = this.artifactPath(name);
-    await writeFile(path, content);
+    await writeFile(path, content, { mode: 0o600 });
     this.artifacts.push({ path, kind, bytes, description });
     return path;
   }
@@ -108,14 +108,14 @@ export class ResultBuilder {
       ok,
       tool: this.tool,
       session_id: this.session?.id ?? "",
-      target: this.target,
+      target: redactDeep(this.target),
       duration_ms: Date.now() - this.started,
-      findings: this.findings,
+      findings: redactDeep(this.findings),
       evidence: redactDeep(this.evidence),
-      limitations: this.limitations.map((l) => l),
+      limitations: redactDeep(this.limitations),
       suggested_next: this.suggested,
       artifacts: this.artifacts,
-      error: this.error,
+      error: this.error === undefined ? undefined : redactDeep(this.error),
       started_at: this.startedAt,
     };
     const capped = capPayload(raw);

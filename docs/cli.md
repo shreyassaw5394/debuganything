@@ -13,11 +13,11 @@ debuganything attach <pid|container|ns/pod>          # prints a session id
 debuganything attach -- node server.js               # spawn under capture (kind=command)
 debuganything trace    --session S [--duration 10] [--categories network,file,process,signal,memory,all]
 debuganything profile  --session S [--duration 15]
-debuganything stacks   --session S
+debuganything stacks   --session S [--consent]    # --consent: Node may get SIGUSR1 to open its inspector
 debuganything sockets  --session S
 debuganything files    --session S [--window 3]
 debuganything capture  --session S [--duration 10] [--filter 'tcp'] --consent
-debuganything memory   --session S [--no-heap] [--window 3]
+debuganything memory   --session S [--no-heap] [--window 3] [--locals] [--consent]
 debuganything diff     --session S <a> <b>           # run ids like snapshot_memory#1, or ordinals
 debuganything container --session S
 debuganything report   --session S [--md out.md]

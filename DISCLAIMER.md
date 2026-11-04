@@ -3,7 +3,7 @@
 **By downloading, installing, or using DebugAnything ("Debug Anything"), you accept this
 disclaimer in full. If you do not agree with it, do not use Debug Anything.**
 
-Debug Anything is a free, open-source diagnostic tool distributed under the
+Debug Anything is a free, non-commercial passion project by an independent developer: an open-source diagnostic tool distributed under the
 [MIT License](LICENSE). This page restates and supplements the license's
 warranty and liability terms in plain language. Nothing here grants rights
 beyond the license.
@@ -96,6 +96,6 @@ above.
 
 ---
 
-*Summary (not a substitute for the above): free tool, no warranty, no
+*Summary (not a substitute for the above): a free, non-commercial passion project by an independent developer; no warranty, no
 liability, observe only what you're authorized to observe, your systems and
 data are your responsibility.*

@@ -3,8 +3,8 @@
  * Core tools (readiness, attach, detach, list_processes, diff_runs, report)
  * live here; everything else goes to the highest-priority ready adapter.
  */
-import { join } from "node:path";
-import { writeFile } from "node:fs/promises";
+import { join, resolve, relative, isAbsolute, dirname } from "node:path";
+import { writeFile, lstat, readFile, realpath } from "node:fs/promises";
 import { ToolArgs, type Readiness, type Session, type Target, type ToolResult } from "./contracts.js";
 import { ResultBuilder, failedResult } from "./evidence.js";
 import { probeReadiness } from "./readiness.js";
@@ -27,19 +27,19 @@ export async function cachedReadiness(maxAgeMs = 30_000): Promise<Readiness> {
 
 export const TOOL_DESCRIPTIONS: Record<keyof typeof ToolArgs, string> = {
   readiness: "Report OS, arch, which providers (strace, py-spy, perf, lsof, tcpdump, gdb/lldb, docker...) are usable, what is missing and how to install it, and permission status (ptrace_scope, sudo, SIP). Always call this first.",
-  attach: "Resolve a target (pid, container, k8s pod, or a command to spawn under capture) and open a session. Returns session_id used by every other tool. Read-only: nothing is modified.",
+  attach: "Resolve a target (pid, container, k8s pod, or a command to spawn under capture) and open a session. Returns session_id used by every other tool. Attaching to a pid, container or pod modifies nothing; kind: \"command\" spawns the given program.",
   detach: "Stop any running captures for the session, finalize the report, keep artifacts under ~/.debuganything/sessions/<id>/.",
   list_processes: "ps-style list (pid, comm, cpu, mem, user, container) for picking a target. Optional substring filter.",
   trace_syscalls: "Linux strace of the target for N seconds: top syscalls by total time and count, slowest individual calls, error counts (ENOENT/EAGAIN/ECONNREFUSED...), blocked waits. Raw log saved as artifact.",
   profile_cpu: "CPU profile for N seconds: py-spy (Python), perf (native/Node on Linux), sample (macOS). Returns top frames (self/total), hottest stacks, flamegraph.svg artifact.",
-  dump_stacks: "Instant snapshot of every thread's stack (py-spy dump / gdb / lldb / Node inspector). The key tool for hangs and deadlocks; flags threads waiting on the same lock.",
+  dump_stacks: "Instant snapshot of every thread's stack (py-spy dump / gdb / lldb / Node inspector). The key tool for hangs and deadlocks; flags threads waiting on the same lock. Node targets without --inspect need consent: true (SIGUSR1 opens the inspector until the process exits).",
   inspect_sockets: "lsof/ss view of the target: listening ports, established connections grouped by remote, states (CLOSE_WAIT pileups, TIME_WAIT counts), fd count vs ulimit.",
   inspect_files: "Open file descriptors by type, growth over a short window, largest open files, deleted-but-open files (disk full but nothing there).",
   capture_traffic: "tcpdump scoped to the target's ports for N seconds (max 30). Per-remote bytes/packets, retransmits, RSTs, DNS queries, TLS SNI. .pcap artifact. REQUIRES consent: true — ask the user first.",
-  snapshot_memory: "RSS/VSZ sampled over a window; Node: heap snapshot with top retainers by retained size; Python: py-spy dump with locals. Take two and diff_runs them to find what grows.",
+  snapshot_memory: "RSS/VSZ sampled over a window; Node: heap snapshot with top retainers by retained size; Python: py-spy dump (locals: true adds variable values). Node targets without --inspect need consent: true (SIGUSR1 opens the inspector until the process exits). Take two and diff_runs them to find what grows.",
   diff_runs: "Diff two prior runs of the same tool in this session (e.g. snapshot_memory#1 vs snapshot_memory#2, profile_cpu#1 vs #2): what grew, appeared, disappeared.",
   container_info: "docker inspect/stats/top/logs tail for the target container, host pid mapping, cgroup limits: throttled? OOM-killed before? restarts?",
-  report: "Markdown report of the whole session: findings, evidence excerpts, artifact paths. Optionally written to a file.",
+  report: "Markdown report of the whole session: findings, evidence excerpts, artifact paths. Optionally written to a .md file inside the current directory or the session directory.",
   import_artifact: "Analyze raw tool output you captured yourself (e.g. `sudo strace …`, `sudo fs_usage …`, `perf script`, `py-spy dump`, `lsof -F`, `tcpdump -nn -tt -r`) and turn it into the same evidence and findings Debug Anything would produce. Use when Debug Anything could not run the tool (no root, macOS).",
 };
 
@@ -122,7 +122,11 @@ async function toolReadiness(): Promise<ToolResult> {
 async function toolAttach(args: { target: string; kind?: Target["kind"] }): Promise<ToolResult> {
   if (platform() === "win32") return failedResult("attach", null, NO_TARGET, "Windows is not supported yet");
   // For commands we need the session dir before spawning so output can be tee'd.
-  const isCommand = (args.kind ?? (await import("./target.js")).guessKind(args.target)) === "command";
+  const { guessKind } = await import("./target.js");
+  if (!args.kind && guessKind(args.target) === "command") {
+    return failedResult("attach", null, NO_TARGET, `"${args.target.slice(0, 120)}" looks like a command line; pass kind: "command" to spawn it under capture`);
+  }
+  const isCommand = args.kind === "command";
   let target: Target;
   let session;
   if (isCommand) {
@@ -198,8 +202,39 @@ async function toolDiffRuns(args: { session_id: string; a: string; b: string }):
   return recordRun(session, result);
 }
 
+/** Inside `root` (after resolving symlinks in the parent directory)? */
+async function isInside(root: string, path: string): Promise<boolean> {
+  const realRoot = await realpath(root).catch(() => resolve(root));
+  const realParent = await realpath(dirname(path)).catch(() => undefined);
+  if (!realParent) return false;
+  const rel = relative(realRoot, join(realParent, path.slice(dirname(path).length + 1)));
+  return rel === "" || (!rel.startsWith("..") && !isAbsolute(rel));
+}
+
+/**
+ * Where `report --out` may write: a .md path inside the current directory or the session directory, not a
+ * symlink, and not an existing file unless it is an earlier Debug Anything report. Returns the resolved path.
+ */
+export async function checkReportOut(out: string, sessionDir: string, cwd = process.cwd()): Promise<string> {
+  const path = resolve(cwd, out);
+  if (!/\.md$/i.test(path)) throw new Error(`report out must be a .md file: ${out}`);
+  if (!(await isInside(cwd, path)) && !(await isInside(sessionDir, path))) throw new Error(`report out must be inside the current directory or the session directory: ${out}`);
+  const st = await lstat(path).catch(() => undefined);
+  if (st) {
+    if (st.isSymbolicLink() || !st.isFile()) throw new Error(`refusing to write report over a symlink or non-file: ${out}`);
+    if (!(await readFile(path, "utf8")).startsWith("# Debug Anything session ")) throw new Error(`refusing to overwrite an existing file that is not a Debug Anything report: ${out}`);
+  }
+  const html = path.replace(/\.md$/i, ".html");
+  const hst = await lstat(html).catch(() => undefined);
+  if (hst && (hst.isSymbolicLink() || !hst.isFile() || !(await readFile(html, "utf8")).startsWith("<!doctype html>"))) {
+    throw new Error(`refusing to overwrite ${html}: not an earlier Debug Anything HTML report`);
+  }
+  return path;
+}
+
 async function toolReport(args: { session_id: string; out?: string; html?: boolean }): Promise<ToolResult> {
   const session = await loadSession(args.session_id);
+  const out = args.out ? await checkReportOut(args.out, session.dir) : undefined;
   const md = await renderReport(session);
   const b = new ResultBuilder("report", session, session.target);
   const path = join(session.dir, "report.md");
@@ -207,13 +242,13 @@ async function toolReport(args: { session_id: string; out?: string; html?: boole
   await b.addArtifact(path, "markdown", { description: "session report" });
   if (args.html) {
     const { renderHtmlReport } = await import("./report_html.js");
-    const htmlPath = args.out ? args.out.replace(/\.(md|html)$/, "") + ".html" : join(session.dir, "report.html");
+    const htmlPath = out ? out.replace(/\.md$/i, "") + ".html" : join(session.dir, "report.html");
     await writeFile(htmlPath, await renderHtmlReport(session));
     await b.addArtifact(htmlPath, "log", { description: "self-contained HTML report (shareable)" });
   }
-  if (args.out) {
-    await writeFile(args.out, md);
-    await b.addArtifact(args.out, "markdown", { description: "copy of session report" });
+  if (out) {
+    await writeFile(out, md);
+    await b.addArtifact(out, "markdown", { description: "copy of session report" });
   }
   const allFindings = [] as Array<{ run: string; severity: string; summary: string }>;
   for (const r of session.runs) {

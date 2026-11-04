@@ -8,6 +8,7 @@ import type { ToolResult } from "./contracts.js";
 import { listSessions, pruneSessions } from "./session.js";
 import { humanBytes } from "./evidence.js";
 import { VERSION } from "./version.js";
+import { usePrivateUmask } from "./safety.js";
 
 const program = new Command();
 program
@@ -15,7 +16,11 @@ program
   .description("◎ Debug Anything. Observe any running process. No breakpoints, no restarts, no instrumentation.\n  https://debuganything.dev")
   .version(VERSION, "-v, --version")
   .option("--json", "print the raw ToolResult JSON")
-  .showHelpAfterError();
+  .showHelpAfterError()
+  .hook("preAction", (_root, action) => {
+    // Session data stays private to this user; commands that write shared/project config keep the normal umask.
+    if (!["setup", "init", "update", "hook"].includes(action.name())) usePrivateUmask();
+  });
 
 function wantJson(cmd: Command): boolean {
   return Boolean(cmd.optsWithGlobals().json);
@@ -158,7 +163,8 @@ program
   .option("--kind <kind>", "pid|container|pod|command (default: auto)")
   .action(async function (this: Command, targetParts: string[], opts) {
     const target = targetParts.join(" ");
-    const kind = opts.kind ?? (targetParts.length > 1 ? "command" : undefined);
+    const { guessKind } = await import("./target.js");
+    const kind = opts.kind ?? (targetParts.length > 1 || guessKind(target) === "command" ? "command" : undefined);
     const r = await runTool("attach", { target, kind });
     await emit(this, r);
     if (r.ok && !wantJson(this)) process.stdout.write(`\n${pc.bold("session:")} ${r.session_id}\n`);
@@ -189,7 +195,7 @@ sessionTool(
   (o) => ({ duration_s: Number(o.duration), categories: String(o.categories).split(",") }),
 );
 sessionTool("profile", "profile_cpu", "CPU profile (py-spy / perf / sample)", (c) => c.option("--duration <s>", "seconds (max 60)", "15").option("--consent", "consent for heavy profiling"), (o) => ({ duration_s: Number(o.duration), consent: Boolean(o.consent) }));
-sessionTool("stacks", "dump_stacks", "dump all thread stacks");
+sessionTool("stacks", "dump_stacks", "dump all thread stacks", (c) => c.option("--consent", "let Debug Anything send SIGUSR1 to a Node target to open its inspector (stays open on 127.0.0.1 until the process exits)"), (o) => ({ consent: Boolean(o.consent) }));
 sessionTool("sockets", "inspect_sockets", "listening ports, connections, states, fd counts");
 sessionTool("files", "inspect_files", "open fds by type, growth, deleted-but-open", (c) => c.option("--window <s>", "growth window seconds", "3"), (o) => ({ window_s: Number(o.window) }));
 sessionTool(
@@ -199,7 +205,7 @@ sessionTool(
   (c) => c.option("--duration <s>", "seconds (max 30)", "10").option("--filter <bpf>", "extra BPF filter").option("--consent", "I have authorization to capture this traffic"),
   (o) => ({ duration_s: Number(o.duration), filter: o.filter, consent: Boolean(o.consent) }),
 );
-sessionTool("memory", "snapshot_memory", "RSS over time + heap snapshot/retainers", (c) => c.option("--no-heap", "skip heap snapshot").option("--window <s>", "RSS sampling window seconds", "3"), (o) => ({ heap: o.heap !== false, window_s: Number(o.window) }));
+sessionTool("memory", "snapshot_memory", "RSS over time + heap snapshot/retainers", (c) => c.option("--no-heap", "skip heap snapshot").option("--window <s>", "RSS sampling window seconds", "3").option("--locals", "Python: include local variable values").option("--consent", "let Debug Anything send SIGUSR1 to a Node target to open its inspector (stays open on 127.0.0.1 until the process exits)"), (o) => ({ heap: o.heap !== false, window_s: Number(o.window), locals: Boolean(o.locals), consent: Boolean(o.consent) }));
 sessionTool("container", "container_info", "docker inspect/stats/logs + cgroup limits");
 
 program
@@ -234,6 +240,7 @@ program
   .option("--kind <kind>", "pid|container|pod|command (default: auto)")
   .option("--wait <s>", "leak: seconds between the two memory snapshots", "15")
   .option("--duration <s>", "profile/trace seconds", "10")
+  .option("--consent", "let Debug Anything send SIGUSR1 to a Node target to open its inspector (stays open on 127.0.0.1 until the process exits)")
   .description("one-command investigation: attach → the right tools for the symptom → report → detach")
   .action(async function (this: Command, targetParts: string[], opts) {
     const { investigate, summarizeFindings } = await import("./investigate.js");
@@ -243,9 +250,10 @@ program
     if (!json) process.stdout.write(`${pc.bold("Debug Anything")} investigating ${pc.cyan(target)} for ${pc.cyan(symptom)} …\n\n`);
     const out = await investigate(target, {
       symptom,
-      kind: opts.kind ?? (targetParts.length > 1 ? "command" : undefined),
+      kind: opts.kind ?? (targetParts.length > 1 || (await import("./target.js")).guessKind(target) === "command" ? "command" : undefined),
       waitS: Number(opts.wait),
       durationS: Number(opts.duration),
+      consent: Boolean(opts.consent),
       onResult: (r) => {
         if (!json) process.stdout.write(renderHuman(r) + "\n");
       },
@@ -331,8 +339,17 @@ program
     process.stdout.write(pc.dim("$ npm install --global debuganything@latest\n"));
     const r = await execa("npm", ["install", "--global", "debuganything@latest"], { reject: false, stdio: "inherit" });
     if (r.exitCode !== 0) {
-      process.stdout.write(`${pc.yellow("global install failed.")} If you use npx, nothing to do: \`npx -y debuganything@latest\` always fetches the latest.\n`);
+      process.stdout.write(`${pc.yellow("global install failed.")} If you use npx, run \`npx -y debuganything@latest setup\` to move your agent configs to the newest version.\n`);
       process.exitCode = 1;
+      return;
+    }
+    // Agent configs pin an exact version; move the pin to what was just installed.
+    const v = await execa("npm", ["view", "debuganything", "version"], { reject: false });
+    const latest = v.stdout.trim();
+    if (v.exitCode === 0 && latest) {
+      const { repinConfigs } = await import("./setup.js");
+      const changed = await repinConfigs(latest);
+      for (const f of changed) process.stdout.write(`${pc.green("✔")} pinned debuganything@${latest} in ${f}\n`);
     }
   });
 

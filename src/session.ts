@@ -2,7 +2,7 @@
  * Session lifecycle: create under ~/.debuganything/sessions/<id>/, persist metadata,
  * save every ToolResult as a run, clean up children on detach.
  */
-import { mkdir, readFile, writeFile, readdir, rm, stat } from "node:fs/promises";
+import { chmod, mkdir, readFile, writeFile, readdir, rm, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -29,11 +29,20 @@ export function platform(): "linux" | "darwin" | "win32" {
   return p === "linux" || p === "darwin" || p === "win32" ? p : "linux";
 }
 
+/** Create (or tighten) a directory so only the current user can read it. Session data can hold secrets. */
+export async function ensurePrivateDir(dir: string): Promise<void> {
+  await mkdir(dir, { recursive: true, mode: 0o700 });
+  await chmod(dir, 0o700).catch(() => undefined);
+}
+
 export async function createSession(target: Target): Promise<Session> {
   const id = newSessionId();
   const dir = join(sessionsDir(), id);
-  await mkdir(join(dir, "runs"), { recursive: true });
-  await mkdir(join(dir, "artifacts"), { recursive: true });
+  await ensurePrivateDir(deaHome());
+  await ensurePrivateDir(sessionsDir());
+  await ensurePrivateDir(dir);
+  await ensurePrivateDir(join(dir, "runs"));
+  await ensurePrivateDir(join(dir, "artifacts"));
   const session: Session = {
     id,
     state: "attached",
@@ -48,7 +57,7 @@ export async function createSession(target: Target): Promise<Session> {
 }
 
 export async function saveSession(session: Session): Promise<void> {
-  await writeFile(join(session.dir, "session.json"), JSON.stringify(session, null, 2));
+  await writeFile(join(session.dir, "session.json"), JSON.stringify(session, null, 2), { mode: 0o600 });
 }
 
 export async function loadSession(id: string): Promise<Session> {
@@ -71,7 +80,7 @@ export async function recordRun(session: Session, result: ToolResult): Promise<T
   const run_id = `${result.tool}#${n}`;
   const file = join(session.dir, "runs", `${String(n).padStart(3, "0")}-${result.tool}.json`);
   const withId: ToolResult = { ...result, run_id };
-  await writeFile(file, JSON.stringify(withId, null, 2));
+  await writeFile(file, JSON.stringify(withId, null, 2), { mode: 0o600 });
   session.runs.push({
     run_id,
     tool: result.tool,

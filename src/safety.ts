@@ -82,6 +82,13 @@ export function assertSafeIdentifier(s: string, what = "identifier"): string {
 export function assertSafeBpfFragment(s: string): string {
   if (s.length > 200) throw new Error("filter too long");
   if (!/^[A-Za-z0-9 .:_\-()&|!=<>[\]]+$/.test(s)) throw new Error(`unsafe filter: ${JSON.stringify(s)}`);
+  // Parentheses must balance and never close past the fragment, or it could escape the "base and (...)" scope.
+  let depth = 0;
+  for (const c of s) {
+    if (c === "(") depth++;
+    else if (c === ")" && --depth < 0) break;
+  }
+  if (depth !== 0) throw new Error(`unbalanced parentheses in filter: ${JSON.stringify(s)}`);
   return s;
 }
 
@@ -194,8 +201,8 @@ export async function runCapped(file: string, args: readonly string[], opts: Cap
   const outChunks: Buffer[] = [];
   const errChunks: Buffer[] = [];
   const streams: WriteStream[] = [];
-  const outFile = opts.stdoutFile ? createWriteStream(opts.stdoutFile) : null;
-  const errFile = opts.stderrFile ? createWriteStream(opts.stderrFile) : null;
+  const outFile = opts.stdoutFile ? createWriteStream(opts.stdoutFile, { mode: 0o600 }) : null;
+  const errFile = opts.stderrFile ? createWriteStream(opts.stderrFile, { mode: 0o600 }) : null;
   if (outFile) streams.push(outFile);
   if (errFile) streams.push(errFile);
 
@@ -255,6 +262,18 @@ export async function fileSize(path: string): Promise<number> {
 // Privilege helpers
 // ---------------------------------------------------------------------------
 
+/**
+ * Make every file this process (and the tools it runs: tcpdump -w, strace -o, perf -o) creates readable by the
+ * current user only. Session artifacts can hold secrets from the observed process. No-op where umask is unsupported.
+ */
+export function usePrivateUmask(): void {
+  try {
+    process.umask(0o077);
+  } catch {
+    /* worker threads / unsupported platforms */
+  }
+}
+
 export function isRoot(): boolean {
   return typeof process.getuid === "function" && process.getuid() === 0;
 }
@@ -285,7 +304,11 @@ const REDACTIONS: Array<[RegExp, string]> = [
   [/gh[pousr]_[A-Za-z0-9]{20,}/g, "gh*_[REDACTED]"],
   [/xox[baprs]-[A-Za-z0-9-]{10,}/g, "xox*-[REDACTED]"],
   [/-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/g, "[REDACTED_PRIVATE_KEY]"],
-  [/(https?:\/\/)([^\s:@/]+):([^\s@/]+)@/gi, "$1$2:[REDACTED]@"],
+  [/((?:^|[^A-Za-z0-9-])--?(?:password|passwd|pwd|token|secret|api[-_]?key|access[-_]?key)\s+)(["']?)[^\s"']+\2/gi, "$1$2[REDACTED]$2"],
+  [/((?:set-)?cookie\s*:\s*)[^\r\n]+/gi, "$1[REDACTED]"],
+  [/(authorization\s*[:=]\s*basic\s+)[A-Za-z0-9+/=._-]+/gi, "$1[REDACTED]"],
+  [/\bBasic\s+(?=[A-Za-z0-9+/]*[0-9+/=])[A-Za-z0-9+/]{12,}={0,2}/g, "Basic [REDACTED]"],
+  [/\b([a-z][a-z0-9+.-]*:\/\/)([^\s:@/]*):([^\s@/]+)@/gi, "$1$2:[REDACTED]@"],
 ];
 
 export function redact(text: string): string {

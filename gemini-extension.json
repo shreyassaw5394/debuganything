@@ -1,9 +1,9 @@
 {
   "name": "debuganything",
-  "version": "0.3.0",
+  "version": "1.1.0",
   "description": "Debug Anything: observe any running process and get evidence-backed findings.",
   "mcpServers": {
-    "debuganything": { "command": "npx", "args": ["-y", "debuganything@latest", "serve"] }
+    "debuganything": { "command": "npx", "args": ["-y", "debuganything@1.1.0", "serve"] }
   },
   "contextFileName": "GEMINI.md"
 }

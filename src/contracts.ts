@@ -295,7 +295,7 @@ export const ToolArgs = {
   readiness: z.object({}),
   attach: z.object({
     target: z.string().min(1).describe("pid, container name/id, k8s pod (ns/name), or a command line (with kind=command)"),
-    kind: TargetKind.optional().describe("Defaults to auto-detect: numeric → pid, else container, else command"),
+    kind: TargetKind.optional().describe("Defaults to auto-detect: numeric → pid, ns/name → pod, else container. Spawning a command requires kind: \"command\"."),
   }),
   detach: z.object({ session_id: z.string().min(1) }),
   list_processes: z.object({
@@ -313,7 +313,10 @@ export const ToolArgs = {
     /** Required when the profiler will use perf on a system the user flagged as production; always safe to pass. */
     consent: z.boolean().optional(),
   }),
-  dump_stacks: z.object({ session_id: z.string().min(1) }),
+  dump_stacks: z.object({
+    session_id: z.string().min(1),
+    consent: z.boolean().optional().describe("Node targets without --inspect: required to send SIGUSR1, which leaves Node's inspector open on 127.0.0.1 until the process exits. Ask the user first."),
+  }),
   inspect_sockets: z.object({ session_id: z.string().min(1) }),
   inspect_files: z.object({
     session_id: z.string().min(1),
@@ -329,6 +332,8 @@ export const ToolArgs = {
     session_id: z.string().min(1),
     heap: z.boolean().default(true).describe("Take a heap snapshot where supported (Node). Set false for metrics only."),
     window_s: z.number().int().min(0).max(30).default(3).describe("Sample RSS over this many seconds"),
+    locals: z.boolean().default(false).describe("Python: include local variable values in the stack dump (may contain user data or secrets). Off by default."),
+    consent: z.boolean().optional().describe("Node targets without --inspect: required to send SIGUSR1, which leaves Node's inspector open on 127.0.0.1 until the process exits. Ask the user first."),
   }),
   diff_runs: z.object({
     session_id: z.string().min(1),

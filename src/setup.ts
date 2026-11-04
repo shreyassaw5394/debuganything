@@ -10,8 +10,11 @@ import { fileURLToPath } from "node:url";
 import { createInterface } from "node:readline/promises";
 import pc from "picocolors";
 import { HOOK_SCRIPT } from "./hook.js";
+import { VERSION } from "./version.js";
 
-export const MCP_ENTRY = { command: "npx", args: ["-y", "debuganything@latest", "serve"] } as const;
+/** Generated configs pin the exact version; `debuganything update` moves the pin. */
+export const PINNED_PACKAGE = `debuganything@${VERSION}`;
+export const MCP_ENTRY = { command: "npx", args: ["-y", PINNED_PACKAGE, "serve"] } as const;
 
 export interface AgentTarget {
   id: "claude" | "codex" | "cursor" | "gemini";
@@ -107,7 +110,30 @@ export function patchClaudeHooks(existing: string | null, scriptPath: string): {
   return { next: JSON.stringify(obj, null, 2) + "\n", changed };
 }
 
-export const TOML_BLOCK = `[mcp_servers.debuganything]\ncommand = "npx"\nargs = ["-y", "debuganything@latest", "serve"]\n`;
+export const TOML_BLOCK = `[mcp_servers.debuganything]\ncommand = "npx"\nargs = ["-y", "${PINNED_PACKAGE}", "serve"]\n`;
+
+/** Move an existing pinned (or @latest) launcher to `version`. Only touches the quoted package spec. Pure. */
+export function repinText(text: string, version: string): { next: string; changed: boolean } {
+  if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) throw new Error(`invalid version: ${version}`);
+  const next = text.replace(/"debuganything@(?:latest|\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)"/g, `"debuganything@${version}"`);
+  return { next, changed: next !== text };
+}
+
+/** Re-pin every agent config that already registers Debug Anything. Returns the files changed. */
+export async function repinConfigs(version: string, home = homedir()): Promise<string[]> {
+  const changed: string[] = [];
+  for (const agent of AGENTS) {
+    const path = agent.configPath(home);
+    if (!existsSync(path)) continue;
+    const text = await readFile(path, "utf8");
+    const r = repinText(text, version);
+    if (!r.changed) continue;
+    await copyFile(path, `${path}.bak-debuganything`);
+    await writeFile(path, r.next);
+    changed.push(path);
+  }
+  return changed;
+}
 
 /** Patch a TOML config: replace an existing [mcp_servers.debuganything] table or append one. Pure, no TOML dependency. */
 export function patchTomlConfig(existing: string | null): { next: string; changed: boolean } {

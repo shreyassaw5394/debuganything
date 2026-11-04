@@ -25,21 +25,21 @@ button:hover{background:#22221f}
 <main>
   <div class="top"><a href="/"><img src="/mark.svg" alt="" width="28" height="28">Debug Anything</a></div>
   <h1>Privacy</h1>
-  <p>Last updated 27 October 2026</p>
+  <p>Last updated 4 November 2026</p>
 
   <h2>The short version</h2>
   <ul>
-    <li><strong>The tools collect nothing.</strong> The CLI, MCP server and Python package run on your machine and send no telemetry. Captures and reports stay in <code>~/.debuganything/</code> (or <code>~/.dea/</code>) on your disk.</li>
+    <li><strong>The tools collect nothing.</strong> The CLI, MCP server and Python package run on your machine and send no telemetry. Captures and reports stay in <code>~/.debuganything/</code> (or <code>$DEA_HOME</code>) on your disk, readable only by your user. They can contain secrets and personal data from the processes you observe; delete them with <code>debuganything sessions prune</code> (add <code>--all</code> to remove every session).</li>
     <li><strong>This website sets no cookies</strong> and loads nothing optional until you accept it.</li>
     <li><strong>The analyzer runs in your browser.</strong> Text you paste into <a href="/analyze">/analyze</a> is processed locally and is never uploaded.</li>
   </ul>
 
   <h2>Who is responsible</h2>
-  <p>Debug Anything is an open-source project maintained by Shreyas Sawant. Contact for anything about privacy: <a href="mailto:shreyassaw@gmail.com">shreyassaw@gmail.com</a>.</p>
+  <p>Debug Anything is a free, non-commercial passion project by an independent developer, maintained by Shreyas Sawant. Contact for anything about privacy: <a href="mailto:shreyassaw@gmail.com">shreyassaw@gmail.com</a>.</p>
 
   <h2>What this website processes</h2>
   <ul>
-    <li><strong>Request logs.</strong> Our host, Vercel (United States), records the IP address, user agent, time and page of each request to deliver the site and protect it from abuse, and keeps them for a short period, never more than 30 days. Legal basis: legitimate interest in running a secure website.</li>
+    <li><strong>Request logs.</strong> Our host, Vercel (United States), records the IP address, user agent, time and page of each request to deliver the site and protect it from abuse, and keeps them for a short period under Vercel's log retention settings. Legal basis: legitimate interest in running a secure website.</li>
     <li><strong>Analytics, only if you accept.</strong> Vercel Web Analytics counts page views and referrers. It sets no cookie and stores no identifier on your device. Legal basis: consent, which you can withdraw with <button type="button" data-cookie-settings>Change privacy choices</button>. Browser signals (Global Privacy Control, Do Not Track) are treated as a refusal.</li>
     <li><strong>Your choice itself</strong> is stored in your browser's local storage under <code>dea_consent</code> so we don't ask again.</li>
     <li><strong>Community numbers</strong> (stars, downloads, contributors) are fetched by our server from GitHub, npm and PyPI. Your browser does not contact those services when you view the page.</li>

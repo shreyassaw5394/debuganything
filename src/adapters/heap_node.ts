@@ -1,21 +1,23 @@
 /**
  * Node heap adapter: snapshot_memory for Node targets via the inspector
- * protocol. If the target was not started with --inspect, we send SIGUSR1
- * (Node's documented "activate inspector" signal), connect over WebSocket to
- * 127.0.0.1:9229, take a HeapProfiler.takeHeapSnapshot, and summarize the top
- * retainers by retained size. The inspector stays enabled on the target
- * afterwards (documented limitation). dump_stacks for Node also uses the
- * inspector (Debugger.pause → call frames) when available.
+ * protocol. Only an inspector port owned by the target's pid tree is used. If
+ * the target was not started with --inspect and the caller passed consent, we
+ * send SIGUSR1 (Node's documented "activate inspector" signal), connect over
+ * WebSocket to 127.0.0.1:9229, take a HeapProfiler.takeHeapSnapshot, and
+ * summarize the top retainers by retained size. The inspector stays enabled on
+ * the target afterwards (reported as a warn finding). dump_stacks for Node also
+ * uses the inspector (Debugger.pause → call frames) when available.
  */
 import { createWriteStream } from "node:fs";
-import { readFile } from "node:fs/promises";
+import { readFile, rm } from "node:fs/promises";
 import type { Adapter, AdapterContext } from "./types.js";
 import type { ToolResult } from "../contracts.js";
 import { ResultBuilder, humanBytes } from "../evidence.js";
-import { runCapped } from "../safety.js";
+import { runCapped, LIMITS } from "../safety.js";
 import { snapshotMemoryGeneric } from "./psmem.js";
 import { mergeResults } from "./pyspy.js";
 import { targetPids } from "../target.js";
+import type { Target } from "../contracts.js";
 
 // ---------------------------------------------------------------------------
 // Heap snapshot parsing (pure, streaming-free; snapshots up to a few hundred MB)
@@ -269,49 +271,124 @@ class Cdp {
   }
 }
 
-/** Find an inspector endpoint for the pid: known ports first; else SIGUSR1 then retry. Returns ws url or undefined. */
-async function findInspector(pid: number, b: ResultBuilder, allowSignal: boolean): Promise<{ url: string; port: number } | undefined> {
-  const ports = [9229, 9230, 9231, 9222];
+/** Inspector ports Node uses by default (9229) and for extra workers/children. */
+export const INSPECTOR_PORTS = [9229, 9230, 9231] as const;
+
+/** Accept a webSocketDebuggerUrl only if it points back at the loopback port we probed. Pure. */
+export function validInspectorUrl(url: unknown, port: number): string | undefined {
+  if (typeof url !== "string") return undefined;
+  try {
+    const u = new URL(url);
+    if (u.protocol !== "ws:") return undefined;
+    if (!["127.0.0.1", "localhost", "[::1]"].includes(u.hostname)) return undefined;
+    if (Number(u.port) !== port) return undefined;
+    return u.toString();
+  } catch {
+    return undefined;
+  }
+}
+
+/** Pids listening on a local TCP port (lsof -F p output). Undefined when lsof is unavailable. */
+export async function listeningPids(port: number): Promise<Set<number> | undefined> {
+  const r = await runCapped("lsof", ["-nP", `-iTCP:${port}`, "-sTCP:LISTEN", "-Fp"], { timeoutMs: 5_000 }).catch(() => undefined);
+  if (!r || (r.exitCode !== 0 && r.exitCode !== 1)) return undefined;
+  const pids = new Set<number>();
+  for (const line of r.stdout.split("\n")) if (/^p\d+$/.test(line)) pids.add(Number(line.slice(1)));
+  return pids;
+}
+
+export interface FindInspectorOptions {
+  /** Send SIGUSR1 when no inspector is open yet (requires the caller's consent). */
+  allowSignal: boolean;
+  ports?: readonly number[];
+  /** Override for tests. */
+  ownersOf?: (port: number) => Promise<Set<number> | undefined>;
+  /** Override for tests. */
+  listTargets?: (port: number) => Promise<InspectorTarget[]>;
+}
+
+/**
+ * Find an inspector endpoint that belongs to the target: the listening port must be owned by the target pid or one
+ * of its descendants, and the advertised WebSocket must point back to that loopback port. Optionally send SIGUSR1
+ * and retry. Returns the ws url, port, and whether we signalled the target.
+ */
+export async function findInspector(target: Pick<Target, "pid" | "pids">, b: ResultBuilder, opts: FindInspectorOptions): Promise<{ url: string; port: number; signalled: boolean } | undefined> {
+  const pid = target.pid!;
+  const owned = new Set<number>([pid, ...(target.pids ?? [])]);
+  const ports = opts.ports ?? INSPECTOR_PORTS;
+  const ownersOf = opts.ownersOf ?? listeningPids;
+  const listTargets = opts.listTargets ?? ((p: number) => listInspectorTargets(p));
+  let noted = false;
   const probe = async () => {
     for (const port of ports) {
-      const list = await listInspectorTargets(port);
-      const t = list.find((x) => x.webSocketDebuggerUrl);
-      if (t) return { url: t.webSocketDebuggerUrl, port };
+      const list = await listTargets(port);
+      if (!list.length) continue;
+      const owners = await ownersOf(port);
+      if (!owners) {
+        if (!noted) b.limitation("lsof is not available, so the inspector port's owner cannot be verified; refusing to connect to it");
+        noted = true;
+        continue;
+      }
+      if (![...owners].some((p) => owned.has(p))) {
+        b.limitation(`inspector on 127.0.0.1:${port} belongs to pid ${[...owners].join(",") || "?"}, not the target; ignored`);
+        continue;
+      }
+      for (const t of list) {
+        const url = validInspectorUrl(t.webSocketDebuggerUrl, port);
+        if (url) return { url, port };
+      }
     }
     return undefined;
   };
-  let found = await probe();
-  if (found) return found;
-  if (!allowSignal) return undefined;
+  const found = await probe();
+  if (found) return { ...found, signalled: false };
+  if (!opts.allowSignal) return undefined;
   // Node's documented way to enable the inspector on a running process.
   try {
     process.kill(pid, "SIGUSR1");
-    b.limitation(`sent SIGUSR1 to pid ${pid} to activate Node's inspector on 127.0.0.1:9229 (it stays enabled until the process exits)`);
   } catch (err) {
     b.limitation(`could not send SIGUSR1 to pid ${pid}: ${(err as Error).message}`);
     return undefined;
   }
-  for (let i = 0; i < 10 && !found; i++) {
+  for (let i = 0; i < 10; i++) {
     await new Promise((r) => setTimeout(r, 300));
-    found = await probe();
+    const again = await probe();
+    if (again) return { ...again, signalled: true };
   }
-  return found;
+  return undefined;
 }
+
+/** Record that SIGUSR1 left the inspector open: a warn finding, so it is not buried in limitations. */
+function noteInspectorOpened(b: ResultBuilder, pid: number, port: number): void {
+  const ev = b.evidenceOf("note", `sent SIGUSR1 to pid ${pid}; Node's inspector is now listening on 127.0.0.1:${port}`, { pid, port, signal: "SIGUSR1" });
+  b.finding("warn", `Node's inspector stays open on 127.0.0.1:${port} until pid ${pid} exits`, [ev], "observed", "Any local process that can reach that port can run code as the target's user. Restart the target when you are done if that matters on this host.");
+}
+
+const NO_CONSENT = "no Node inspector is open on the target; pass consent: true to let Debug Anything send SIGUSR1, which opens one on 127.0.0.1:9229 until the process exits (or start the target with --inspect)";
 
 async function takeHeapSnapshot(url: string, outPath: string): Promise<{ bytes: number; chunks: number }> {
   const cdp = await Cdp.connect(url);
-  const file = createWriteStream(outPath);
+  const file = createWriteStream(outPath, { mode: 0o600 });
   let bytes = 0;
   let chunks = 0;
+  let over = false;
+  let abort: (e: Error) => void = () => {};
+  const capped = new Promise<never>((_, reject) => (abort = reject));
   cdp.on("HeapProfiler.addHeapSnapshotChunk", (p) => {
+    if (over) return;
     const chunk = (p as { chunk: string }).chunk;
     bytes += chunk.length;
     chunks++;
+    if (bytes > LIMITS.MAX_RAW_BYTES) {
+      over = true;
+      abort(new Error(`heap snapshot exceeded the ${Math.round(LIMITS.MAX_RAW_BYTES / 1024 / 1024)} MB cap; aborted`));
+      return;
+    }
     file.write(chunk);
   });
   try {
     await cdp.send("HeapProfiler.enable");
-    await cdp.send("HeapProfiler.takeHeapSnapshot", { reportProgress: false, treatGlobalObjectsAsRoots: true, captureNumericValue: false }, 55_000);
+    await Promise.race([cdp.send("HeapProfiler.takeHeapSnapshot", { reportProgress: false, treatGlobalObjectsAsRoots: true, captureNumericValue: false }, 55_000), capped]);
   } finally {
     cdp.close();
     await new Promise<void>((r) => file.end(() => r()));
@@ -319,17 +396,18 @@ async function takeHeapSnapshot(url: string, outPath: string): Promise<{ bytes: 
   return { bytes, chunks };
 }
 
-async function snapshotMemory(ctx: AdapterContext, args: { heap?: boolean; window_s?: number }): Promise<ToolResult> {
+async function snapshotMemory(ctx: AdapterContext, args: { heap?: boolean; window_s?: number; consent?: boolean }): Promise<ToolResult> {
   const base = await snapshotMemoryGeneric(ctx, args);
   if (args.heap === false) return base;
   const { session, target } = ctx;
   const b = new ResultBuilder("snapshot_memory", session, target);
   const pid = target.pid!;
-  const insp = await findInspector(pid, b, true);
+  const insp = await findInspector(target, b, { allowSignal: args.consent === true });
   if (!insp) {
-    b.limitation("no Node inspector reachable on 127.0.0.1:9229-9231 and SIGUSR1 did not open one; start the target with --inspect for heap snapshots");
+    b.limitation(args.consent === true ? "no Node inspector owned by the target on 127.0.0.1:9229-9231 and SIGUSR1 did not open one; start the target with --inspect for heap snapshots" : NO_CONSENT);
     return mergeResults(base, b.build(), []);
   }
+  if (insp.signalled) noteInspectorOpened(b, pid, insp.port);
   const outPath = b.artifactPath("heap.heapsnapshot");
   let took: { bytes: number; chunks: number };
   try {
@@ -337,6 +415,7 @@ async function snapshotMemory(ctx: AdapterContext, args: { heap?: boolean; windo
     b.limitation(`heap snapshot: ${took.chunks} chunks, ${Math.round(took.bytes / 1024 / 1024)} MB JSON`);
   } catch (err) {
     b.limitation(`heap snapshot failed: ${(err as Error).message}`);
+    await rm(outPath, { force: true }).catch(() => undefined);
     return mergeResults(base, b.build(), []);
   }
   await b.addArtifact(outPath, "heapsnapshot", { description: `V8 heap snapshot via inspector :${insp.port} (open in Chrome DevTools → Memory → Load)` });
@@ -362,15 +441,16 @@ async function snapshotMemory(ctx: AdapterContext, args: { heap?: boolean; windo
 }
 
 /** dump_stacks for Node through the inspector: pause, read call frames of the main thread, resume. */
-async function dumpStacks(ctx: AdapterContext): Promise<ToolResult> {
+async function dumpStacks(ctx: AdapterContext, args: { consent?: boolean }): Promise<ToolResult> {
   const { session, target } = ctx;
   const b = new ResultBuilder("dump_stacks", session, target);
   const pid = target.pid!;
-  const insp = await findInspector(pid, b, true);
+  const insp = await findInspector(target, b, { allowSignal: args.consent === true });
   if (!insp) {
-    b.limitation("no Node inspector reachable; falling back needs gdb/lldb (native frames only)");
+    b.limitation(args.consent === true ? "no Node inspector owned by the target; falling back needs gdb/lldb (native frames only)" : NO_CONSENT);
     return b.fail("node inspector not available; cannot attach").build();
   }
+  if (insp.signalled) noteInspectorOpened(b, pid, insp.port);
   const cdp = await Cdp.connect(insp.url);
   try {
     const paused = new Promise<unknown>((resolve) => cdp.on("Debugger.paused", resolve));
@@ -417,12 +497,12 @@ export const heapNodeAdapter: Adapter = {
   runtimes: ["node"],
   priority: 20,
   check(base) {
-    base.notes.push("uses Node's inspector protocol; sends SIGUSR1 to enable it if the target was not started with --inspect");
+    base.notes.push("uses Node's inspector protocol; with consent: true it sends SIGUSR1 to enable it if the target was not started with --inspect");
     return base;
   },
   async run(tool, args, ctx) {
-    if (tool === "snapshot_memory") return snapshotMemory(ctx, args as { heap?: boolean; window_s?: number });
-    if (tool === "dump_stacks") return dumpStacks(ctx);
+    if (tool === "snapshot_memory") return snapshotMemory(ctx, args as { heap?: boolean; window_s?: number; consent?: boolean });
+    if (tool === "dump_stacks") return dumpStacks(ctx, args as { consent?: boolean });
     throw new Error(`node-inspector adapter cannot run ${tool}`);
   },
 };

@@ -1095,7 +1095,7 @@ Generated from `src/contracts.ts` by `npm run schemas`.
         "description": "pid, container name/id, k8s pod (ns/name), or a command line (with kind=command)"
       },
       "kind": {
-        "description": "Defaults to auto-detect: numeric → pid, else container, else command",
+        "description": "Defaults to auto-detect: numeric → pid, ns/name → pod, else container. Spawning a command requires kind: \"command\".",
         "type": "string",
         "enum": [
           "pid",
@@ -1214,6 +1214,10 @@ Generated from `src/contracts.ts` by `npm run schemas`.
       "session_id": {
         "type": "string",
         "minLength": 1
+      },
+      "consent": {
+        "description": "Node targets without --inspect: required to send SIGUSR1, which leaves Node's inspector open on 127.0.0.1 until the process exits. Ask the user first.",
+        "type": "boolean"
       }
     },
     "required": [
@@ -1305,12 +1309,22 @@ Generated from `src/contracts.ts` by `npm run schemas`.
         "type": "integer",
         "minimum": 0,
         "maximum": 30
+      },
+      "locals": {
+        "default": false,
+        "description": "Python: include local variable values in the stack dump (may contain user data or secrets). Off by default.",
+        "type": "boolean"
+      },
+      "consent": {
+        "description": "Node targets without --inspect: required to send SIGUSR1, which leaves Node's inspector open on 127.0.0.1 until the process exits. Ask the user first.",
+        "type": "boolean"
       }
     },
     "required": [
       "session_id",
       "heap",
-      "window_s"
+      "window_s",
+      "locals"
     ],
     "additionalProperties": false
   },
@@ -1325,12 +1339,12 @@ Generated from `src/contracts.ts` by `npm run schemas`.
       "a": {
         "type": "string",
         "minLength": 1,
-        "description": "run id of the earlier result"
+        "description": "run id of the earlier result; '<session_id>:<run>' reads a baseline run from another session (e.g. a recorded healthy run)"
       },
       "b": {
         "type": "string",
         "minLength": 1,
-        "description": "run id of the later result"
+        "description": "run id of the later result; '<session_id>:<run>' works here too"
       }
     },
     "required": [
@@ -1365,10 +1379,59 @@ Generated from `src/contracts.ts` by `npm run schemas`.
       "out": {
         "description": "Optional path to also write the markdown to",
         "type": "string"
+      },
+      "html": {
+        "description": "Also render a self-contained report.html (shareable: ranked findings, expandable evidence, embedded flamegraphs)",
+        "type": "boolean"
       }
     },
     "required": [
       "session_id"
+    ],
+    "additionalProperties": false
+  },
+  "import_artifact": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "session_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "tool": {
+        "type": "string",
+        "enum": [
+          "strace",
+          "fs_usage",
+          "perf_script",
+          "folded",
+          "pyspy_dump",
+          "sample",
+          "gdb",
+          "lldb",
+          "lsof",
+          "tcpdump",
+          "jstack",
+          "goroutines"
+        ],
+        "description": "What produced the file"
+      },
+      "path": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Path to the raw output file you captured yourself (e.g. with sudo)"
+      },
+      "duration_s": {
+        "description": "How long the capture ran, when the file has no timestamps (profiles)",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 3600
+      }
+    },
+    "required": [
+      "session_id",
+      "tool",
+      "path"
     ],
     "additionalProperties": false
   }

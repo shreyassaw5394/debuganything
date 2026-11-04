@@ -7,4 +7,4 @@ startCommand:
     properties: {}
     additionalProperties: false
   commandFunction: |
-    () => ({ command: "npx", args: ["-y", "debuganything@latest", "serve"] })
+    () => ({ command: "npx", args: ["-y", "debuganything@1.1.0", "serve"] })
