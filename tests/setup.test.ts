@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { patchJsonConfig, patchTomlConfig, setup, TOML_BLOCK } from "../src/setup.js";
+import { patchJsonConfig, patchTomlConfig, repinText, setup, PINNED_PACKAGE, TOML_BLOCK } from "../src/setup.js";
+import { VERSION } from "../src/version.js";
 
 describe("setup config patching", () => {
   it("adds debuganything to an existing JSON config without touching other servers", () => {
@@ -11,7 +12,7 @@ describe("setup config patching", () => {
     const obj = JSON.parse(next);
     expect(obj.theme).toBe("dark");
     expect(obj.mcpServers.other.command).toBe("x");
-    expect(obj.mcpServers.debuganything).toEqual({ command: "npx", args: ["-y", "debuganything@latest", "serve"] });
+    expect(obj.mcpServers.debuganything).toEqual({ command: "npx", args: ["-y", PINNED_PACKAGE, "serve"] });
   });
   it("is idempotent", () => {
     const first = patchJsonConfig(null).next;
@@ -28,9 +29,26 @@ describe("setup config patching", () => {
     const stale = 'model = "o3"\n\n[mcp_servers.debuganything]\ncommand = "old"\n\n[other]\nx = 1\n';
     const b = patchTomlConfig(stale);
     expect(b.changed).toBe(true);
-    expect(b.next).toContain('args = ["-y", "debuganything@latest", "serve"]');
+    expect(b.next).toContain(`args = ["-y", "${PINNED_PACKAGE}", "serve"]`);
     expect(b.next).toContain("[other]");
     expect(b.next).not.toContain('command = "old"');
+  });
+});
+
+describe("launcher pin", () => {
+  it("pins the package version, never @latest", () => {
+    expect(PINNED_PACKAGE).toBe(`debuganything@${VERSION}`);
+    expect(TOML_BLOCK).not.toContain("@latest");
+  });
+  it("re-pins existing entries only", () => {
+    const json = JSON.stringify({ mcpServers: { debuganything: { command: "npx", args: ["-y", "debuganything@latest", "serve"] }, other: { args: ["debuganything-extra"] } } });
+    const r = repinText(json, "9.9.9");
+    expect(r.changed).toBe(true);
+    expect(r.next).toContain('"debuganything@9.9.9"');
+    expect(r.next).toContain('"debuganything-extra"');
+    expect(repinText(r.next, "9.9.9").changed).toBe(false);
+    expect(repinText('args = ["-y", "debuganything@1.0.1", "serve"]', "1.2.0").next).toContain('"debuganything@1.2.0"');
+    expect(() => repinText(json, "latest; rm -rf /")).toThrow(/invalid version/);
   });
 });
 

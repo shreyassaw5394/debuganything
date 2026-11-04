@@ -264,8 +264,8 @@ export async function spawnCommand(cmdline: string, captureDir?: string): Promis
   const dir = captureDir ?? process.cwd();
   const stdoutPath = join(dir, "stdout.log");
   const stderrPath = join(dir, "stderr.log");
-  const out = createWriteStream(stdoutPath);
-  const err = createWriteStream(stderrPath);
+  const out = createWriteStream(stdoutPath, { mode: 0o600 });
+  const err = createWriteStream(stderrPath, { mode: 0o600 });
   const child = spawn(argv[0]!, argv.slice(1), { stdio: ["ignore", "pipe", "pipe"], detached: true, env: process.env });
   child.stdout.pipe(out);
   child.stderr.pipe(err);

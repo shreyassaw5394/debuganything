@@ -21,7 +21,7 @@ pip install 'debuganything[crewai]'       # + CrewAI BaseTools
 ```python
 from debuganything import DebugAnything
 
-debuganything = DebugAnything()                       # uses `debuganything` if installed, else `npx -y debuganything@latest`
+debuganything = DebugAnything()                       # uses `debuganything` if installed, else `npx -y debuganything@1.1.0`
 print(da.readiness()["findings"])
 s = da.attach(12345)             # pid, "my-container", "ns/pod", or a command
 before = da.snapshot_memory(s)
@@ -70,7 +70,7 @@ sre = Agent(role="SRE", goal="Diagnose the hung worker with evidence, never gues
 
 Any framework with MCP support (LangChain `langchain-mcp-adapters`, LlamaIndex
 `McpToolSpec`, CrewAI `MCPServerAdapter`, Claude Code, Codex, Cursor…) can run
-Debug Anything directly: `{"command": "npx", "args": ["-y", "debuganything@latest", "serve"]}`.
+Debug Anything directly: `{"command": "npx", "args": ["-y", "debuganything@1.1.0", "serve"]}`.
 Same 14 tools, same ToolResult, plus the guided prompts.
 
 ## Safety
@@ -81,4 +81,4 @@ what it returns, and keeps raw artifacts under `~/.debuganything/sessions/`. See
 
 ## License and disclaimer
 
-MIT. Provided "as is", without warranty of any kind; the authors accept no liability for any damage arising from use. Only observe systems you own or are explicitly authorized to debug — you are solely responsible for authorization and legal compliance. Findings are automated diagnostics, not professional advice. See the full [DISCLAIMER](https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md).
+MIT. Debug Anything is a free, non-commercial passion project by an independent developer. Provided "as is", without warranty of any kind; the authors accept no liability for any damage arising from use. Only observe systems you own or are explicitly authorized to debug — you are solely responsible for authorization and legal compliance. Findings are automated diagnostics, not professional advice. See the full [DISCLAIMER](https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md).

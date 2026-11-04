@@ -23,7 +23,7 @@ import shutil
 import subprocess
 from typing import Any, Dict, List, Optional, Sequence
 
-__version__ = "0.1.1"
+__version__ = "1.1.0"
 __all__ = ["DebugAnything", "DebugAnythingError", "TOOLS", "ToolResult"]
 
 ToolResult = Dict[str, Any]
@@ -55,7 +55,7 @@ class DebugAnything:
     """Client for the Debug Anything CLI.
 
     Args:
-        command: how to invoke DebugAnything. Defaults to ``["npx", "-y", "debuganything@latest"]``;
+        command: how to invoke DebugAnything. Defaults to ``["npx", "-y", "debuganything@1.1.0"]``;
             pass ``["debuganything"]`` if installed globally. ``DEA_COMMAND`` env var (shell-split) overrides.
         timeout: subprocess timeout in seconds (Debug Anything itself caps tools at 60 s).
         raise_on_error: raise ``DebugAnythingError`` when ``ok`` is false instead of returning the result.
@@ -66,7 +66,7 @@ class DebugAnything:
         if command is None and env_cmd:
             command = env_cmd.split()
         if command is None:
-            command = ["debuganything"] if shutil.which("debuganything") else ["npx", "-y", "debuganything@latest"]
+            command = ["debuganything"] if shutil.which("debuganything") else ["npx", "-y", "debuganything@1.1.0"]
         self.command: List[str] = list(command)
         self.timeout = timeout
         self.raise_on_error = raise_on_error

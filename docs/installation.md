@@ -27,7 +27,7 @@ Add this to your agent's MCP config:
 ```json
 {
   "mcpServers": {
-    "debuganything": { "command": "npx", "args": ["-y", "debuganything@latest", "serve"] }
+    "debuganything": { "command": "npx", "args": ["-y", "debuganything@1.1.0", "serve"] }
   }
 }
 ```
@@ -37,7 +37,7 @@ Codex (`~/.codex/config.toml`):
 ```toml
 [mcp_servers.debuganything]
 command = "npx"
-args = ["-y", "debuganything@latest", "serve"]
+args = ["-y", "debuganything@1.1.0", "serve"]
 ```
 
 ## CLI only
@@ -47,12 +47,12 @@ npm install --global debuganything
 debuganything readiness
 ```
 
-or without installing: `npx -y debuganything@latest readiness`.
+or without installing: `npx -y debuganything@1.1.0 readiness`.
 
 ## Update
 
 ```bash
-debuganything update            # npm install --global debuganything@latest
+debuganything update            # npm install --global debuganything@latest, then re-pins your agent configs
 npx debuganything@latest setup   # refresh registrations after a major version
 ```
 

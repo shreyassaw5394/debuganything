@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.0 — 2026-11-04
+
+- Node inspector: `snapshot_memory` and `dump_stacks` connect only to an
+  inspector port owned by the target's pid tree, and send `SIGUSR1` only with
+  `consent: true` (CLI: `--consent`). When they do, the result carries a `warn`
+  finding. Heap snapshots respect the 50 MB raw-output cap.
+- `attach` spawns a program only with `kind: "command"` (the CLI still detects
+  command lines typed at the terminal).
+- `report --out` writes a `.md` file inside the current directory or the
+  session directory.
+- Python `snapshot_memory` includes local variable values only with
+  `locals: true` (CLI: `--locals`).
+- Output redaction covers more formats; session files are private to your user.
+- Per-tool MCP annotations; HTML reports carry a Content-Security-Policy.
+- Generated agent configs pin `debuganything@<version>`; `debuganything update`
+  moves the pin.
+- Packet-capture filter fragments must have balanced parentheses.
+- Site, docs and manifest updates.
+
 ## 1.0.1 — 2026-10-19
 
 - Fixes the Python integrations, which referenced a class that no longer

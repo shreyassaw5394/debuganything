@@ -37,7 +37,7 @@
 
   // ---- the scene: evidence markers with a glass card ----
   const ev = {
-    1: ["Evidence 1 · attach#1/e1", "Attached to pid 34327, a Node.js server. Nothing was injected into it."],
+    1: ["Evidence 1 · attach#1/e1", "Attached to pid 34327, a Node.js server. Nothing in its code was modified."],
     2: ["Evidence 2 · snapshot_memory#2/e2", "The baseline: RSS 47.2 MB, stable over 3 seconds."],
     3: ["Evidence 3 · snapshot_memory#3/e5", "After 300 requests one Array retains 37.6 MB, 85% of the heap, held by Context.retained."],
     4: ["Evidence 4 · diff_runs#6/e4", "Between the first and last snapshot the Array grew from 2.0 KB to 87.7 MB. That is the leak."],

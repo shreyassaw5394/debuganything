@@ -16,7 +16,7 @@ export interface InvestigateOptions {
   waitS?: number;
   /** Profile / trace durations. */
   durationS?: number;
-  /** Allow capture_traffic (needs consent). */
+  /** Allow tools that need consent (Node inspector via SIGUSR1). */
   consent?: boolean;
   onResult?: (r: ToolResult) => void;
   onNote?: (s: string) => void;
@@ -93,6 +93,7 @@ export async function investigate(target: string, opts: InvestigateOptions): Pro
       }
       args = { a: mems[mems.length - 2], b: mems[mems.length - 1] };
     }
+    if (opts.consent && (step.tool === "snapshot_memory" || step.tool === "dump_stacks")) args = { ...args, consent: true };
     const r = await runTool(step.tool, { session_id, ...args });
     results.push(r);
     emit(r);

@@ -1,6 +1,6 @@
 /**
  * py-spy adapter: profile_cpu (record → folded stacks → flamegraph), dump_stacks
- * (thread stacks + lock-wait detection), snapshot_memory contribution (dump --locals).
+ * (thread stacks + lock-wait detection), snapshot_memory contribution (dump, --locals when asked).
  */
 import { readFileSync } from "node:fs";
 import type { Adapter, AdapterContext } from "./types.js";
@@ -399,8 +399,12 @@ export const pyspyAdapter: Adapter = {
       // so we merge both here.
       const { snapshotMemoryGeneric } = await import("./psmem.js");
       const base = await snapshotMemoryGeneric(ctx, args as { window_s?: number });
-      const dump = await dumpStacks(ctx, true, "snapshot_memory");
-      return mergeResults(base, dump, ["instant stack+locals via py-spy; Python has no retained-size heap view without tracemalloc — enable tracemalloc in the app for allocation-site attribution"]);
+      const withLocals = (args as { locals?: boolean }).locals === true;
+      const dump = await dumpStacks(ctx, withLocals, "snapshot_memory");
+      return mergeResults(base, dump, [
+        withLocals ? "instant stack+locals via py-spy" : "instant stack via py-spy (pass locals: true to include local variable values)",
+        "Python has no retained-size heap view without tracemalloc — enable tracemalloc in the app for allocation-site attribution",
+      ]);
     }
     throw new Error(`py-spy adapter cannot run ${tool}`);
   },

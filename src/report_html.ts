@@ -66,6 +66,7 @@ export function renderHtmlReportFromRuns(session: Session, runs: ToolResult[], f
 
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">
 <title>Debug Anything report — ${esc(t.kind)} ${esc(t.id)}</title>
 <style>
 :root{--bg:#0b0d12;--fg:#eef2f8;--muted:#9aa3b2;--dim:#5f6878;--acc:#7cc4ff;--warn:#ffb86b;--high:#ff7b7b;--card:#121521;--line:#1f2434;color-scheme:dark}

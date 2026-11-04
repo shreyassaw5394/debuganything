@@ -52,7 +52,7 @@
     <p class="hero-note">Works with Claude Code, Cursor, Codex and Gemini CLI. Read-only.</p>
   </div>
   <figure class="scene" data-r aria-labelledby="scene-cap">
-    <figcaption id="scene-cap"><span>A real case: a Node.js server that keeps growing</span><span class="scene-hint">Tap a marker</span></figcaption>
+    <figcaption id="scene-cap"><span>A reproducible example (examples/leaky-node, run 29 Oct 2026): a Node.js server that keeps growing</span><span class="scene-hint">Tap a marker</span></figcaption>
 <pre class="scene-out" translate="no"><span class="c">$ debuganything attach 34327</span>
 <span class="ok">✔</span> attach#1  60 ms
   <span class="in">INFO</span>  attached to pid 34327 (node)<button class="mk" type="button" data-e="1" aria-describedby="tip" aria-label="Evidence 1">1</button>
@@ -75,7 +75,7 @@
 <section id="cases" class="cases" aria-labelledby="cases-title">
   <div class="cases-head" data-r>
     <h2 id="cases-title">Case files.</h2>
-    <p>Real problems, the commands it ran, the evidence it numbered and the fix. Pick one.</p>
+    <p>Example problems reproduced on purpose (see <code>examples/</code> in the repo, October 2026): the commands it ran, the evidence it numbered and the fix. Pick one.</p>
   </div>
   <div class="cases-grid">
     <div class="case-list" role="tablist" aria-label="Case files" id="case-list"></div>
@@ -120,14 +120,14 @@
 </section>
 
 <section class="looks" aria-labelledby="looks-title">
-  <div class="tape" aria-hidden="true"><div class="tape-run"><span>Read-only</span><span>No sudo</span><span>Asks before capture</span><span>Secrets redacted</span><span>Local only</span><span>Read-only</span><span>No sudo</span><span>Asks before capture</span><span>Secrets redacted</span><span>Local only</span><span>Read-only</span><span>No sudo</span><span>Asks before capture</span><span>Secrets redacted</span><span>Local only</span></div></div>
+  <div class="tape" aria-hidden="true"><div class="tape-run"><span>Read-only</span><span>No auto-sudo</span><span>Asks before capture</span><span>Common secrets redacted</span><span>Local only</span><span>Read-only</span><span>No auto-sudo</span><span>Asks before capture</span><span>Common secrets redacted</span><span>Local only</span><span>Read-only</span><span>No auto-sudo</span><span>Asks before capture</span><span>Common secrets redacted</span><span>Local only</span></div></div>
   <div class="looks-body">
     <h2 id="looks-title" data-r>It only looks.</h2>
     <dl class="rules" data-r>
-      <div><dt>Read-only</dt><dd>Never kills, signals, patches or sets breakpoints.</dd></div>
-      <div><dt>No sudo, ever</dt><dd>If a tool needs root, you get the exact command to run yourself.</dd></div>
-      <div><dt>Asks first</dt><dd>Packet capture needs an explicit yes, every time.</dd></div>
-      <div><dt>Redacted</dt><dd>Tokens, keys and passwords are scrubbed from what the agent sees.</dd></div>
+      <div><dt>Read-only</dt><dd>Never kills, patches or sets breakpoints. One exception: on Node it can send SIGUSR1 to open the inspector, and only after you say yes.</dd></div>
+      <div><dt>Never runs sudo for you</dt><dd>If a tool needs root, you get the exact command to run yourself.</dd></div>
+      <div><dt>Asks first</dt><dd>Packet capture and opening a Node inspector need an explicit yes, every time.</dd></div>
+      <div><dt>Redacted</dt><dd>Common token, key and password formats are scrubbed from what the agent sees. Raw artifacts on your disk are not.</dd></div>
       <div><dt>Local only</dt><dd>No cloud, no telemetry, no update checks.</dd></div>
       <div><dt>Honest about limits</dt><dd>Each finding says observed or inferred, and what the tools could not see.</dd></div>
     </dl>
@@ -211,7 +211,7 @@ debuganything report --session $S        write the report</code></pre>
       <a href="/fonts/OFL-Archivo.txt">Font licence</a>
       <a href="#" data-cookie-settings>Cookie settings</a>
     </nav>
-    <p class="fine">Debug Anything is a free, open-source project, MIT licensed, provided “as is” without warranty. Only observe systems you own or are authorized to debug. Findings are automated diagnostics, not professional advice. Not affiliated with the companies or tools named here; their names are trademarks of their owners. <a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Disclaimer</a>. Set in Archivo.</p>
+    <p class="fine">Debug Anything is a free, non-commercial passion project by an independent developer, open source under the MIT licence, provided “as is” without warranty. Only observe systems you own or are authorized to debug. Findings are automated diagnostics, not professional advice. Not affiliated with the companies or tools named here; their names are trademarks of their owners. <a href="https://github.com/shreyassaw5394/debuganything/blob/main/DISCLAIMER.md">Disclaimer</a>. Set in Archivo.</p>
   </div>
 </footer>
 </body>

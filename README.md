@@ -68,7 +68,7 @@ npx debuganything setup
 
 Detects Claude Code, Codex, Cursor and Gemini CLI, shows the exact config entry it will add, backs up the file, writes it, and installs the `debug-anything` skill where the agent supports skills. Then restart your agent.
 
-**One-click installs:** [![Install MCP Server in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=debuganything&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImRlYnVnYW55dGhpbmdAbGF0ZXN0Iiwic2VydmUiXX0=) [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_DEA-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=debuganything&config=%7B%22name%22%3A%22debuganything%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22debuganything%40latest%22%2C%22serve%22%5D%7D) [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_DEA-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=debuganything&config=%7B%22name%22%3A%22debuganything%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22debuganything%40latest%22%2C%22serve%22%5D%7D)
+**One-click installs:** [![Install MCP Server in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=debuganything&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImRlYnVnYW55dGhpbmdAMS4xLjAiLCJzZXJ2ZSJdfQ==) [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_DEA-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=debuganything&config=%7B%22name%22%3A%22debuganything%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22debuganything%401.1.0%22%2C%22serve%22%5D%7D) [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_DEA-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=debuganything&config=%7B%22name%22%3A%22debuganything%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22debuganything%401.1.0%22%2C%22serve%22%5D%7D)
 
 Claude Code plugin: `/plugin marketplace add shreyassaw5394/debuganything` then `/plugin install debuganything@debuganything` · Gemini CLI: `gemini extensions install https://github.com/shreyassaw5394/debuganything` · Skill: `npx skills add shreyassaw5394/debuganything`
 
@@ -86,7 +86,7 @@ The agent calls `readiness`, `attach`, then the right tools, and answers with fi
 ### 3. No agent? One command
 
 ```bash
-npx -y debuganything@latest why 12345 --symptom leak     # or: slow | hang | crash | triage
+npx -y debuganything@1.1.0 why 12345 --symptom leak     # or: slow | hang | crash | triage
 debuganything why my-container --symptom crash
 debuganything why -- node server.js                             # spawn it under observation
 ```
@@ -98,7 +98,7 @@ you cannot run instead of failing.
 ### 4. Or step by step
 
 ```bash
-npx -y debuganything@latest readiness
+npx -y debuganything@1.1.0 readiness
 debuganything ps --filter node
 S=$(debuganything attach 12345 --json | jq -r .session_id)
 debuganything profile --session $S --duration 10
@@ -133,7 +133,7 @@ npx skills add shreyassaw5394/debuganything
 ### 7. Update
 
 ```bash
-debuganything update                        # or: npx debuganything@latest setup
+debuganything update                        # re-pins agent configs; or: npx debuganything@latest setup
 ```
 
 ## How Debug Anything works
@@ -229,8 +229,9 @@ Because today it cannot. Agents cannot attach to a process; they fumble `strace`
 
 ## Safety
 
-- **Read-only.** v0 tools only observe. No kill, no breakpoints, no probes that modify behavior. Documented exception: Node targets may receive `SIGUSR1` to enable the inspector.
-- **Consent.** `capture_traffic` requires `consent: true`; the skill tells agents to ask you first.
+- **Read-only.** v0 tools only observe. No kill, no breakpoints, no probes that modify behavior. Documented exception: Node targets may receive `SIGUSR1` to enable the inspector, which then stays open on 127.0.0.1 until the process exits, and only with `consent: true`.
+- **Consent.** `capture_traffic` requires `consent: true`, and so do `snapshot_memory`/`dump_stacks` when they would open a Node inspector; the skill tells agents to ask you first. `attach` spawns a program only with `kind: "command"`.
+- **Private files.** Session directories are created `0700` and files `0600`; they can hold secrets from the observed process. `debuganything sessions prune` deletes them.
 - **Hard caps.** 60 s per tool (30 s for captures), 50 MB raw output on disk, 16 KB returned to the agent (summaries + pointers; cited evidence is never dropped). Every child is killed with SIGTERM then SIGKILL.
 - **No sudo, ever.** If a tool needs root you get `ok: false` and the exact command you could run yourself. `readiness` reports `ptrace_scope`, `perf_event_paranoid`, SIP and `sudo -n` status up front.
 - **Scoped.** Adapters touch only the attached pid tree or container. Captures are filtered to the target's ports and refuse to run unbounded.
@@ -241,7 +242,7 @@ Details: [docs/safety.md](docs/safety.md) · [DISCLAIMER.md](DISCLAIMER.md) · [
 
 ## FAQ
 
-**Which agents work?** Anything that speaks MCP over stdio. `setup` knows Claude Code, Codex, Cursor and Gemini CLI; for others add `{"command":"npx","args":["-y","debuganything@latest","serve"]}` to the MCP config ([docs/installation.md](docs/installation.md)).
+**Which agents work?** Anything that speaks MCP over stdio. `setup` knows Claude Code, Codex, Cursor and Gemini CLI; for others add `{"command":"npx","args":["-y","debuganything@1.1.0","serve"]}` to the MCP config ([docs/installation.md](docs/installation.md)).
 
 **Do I need to install strace / perf / py-spy?** Only for the tools you want. `readiness` lists what is usable and prints install hints. `lsof`, `ps` and Node's inspector work out of the box on Linux and macOS.
 
@@ -283,4 +284,4 @@ Numbers across npm, PyPI, GitHub and the MCP Registry: `bash scripts/stats.sh`.
 
 ## License and disclaimer
 
-MIT — see [LICENSE](LICENSE). Debug Anything is provided **"as is", without warranty of any kind**; the authors and contributors accept **no liability** for outages, data exposure, or any other damage arising from its use. Debug Anything attaches observation tools to running software: **only observe systems you own or are explicitly authorized to debug** — you are solely responsible for authorization and for complying with applicable laws and policies. Observation is not free (ptrace pauses targets; captures and heap dumps can contain secrets), findings are automated diagnostics rather than professional advice, and Debug Anything is an independent project developed by its contributors in their personal capacities, unaffiliated with any employer or with the third-party tools it orchestrates. Full terms: [DISCLAIMER.md](DISCLAIMER.md).
+MIT — see [LICENSE](LICENSE). Debug Anything is a free, non-commercial passion project by an independent developer, provided **"as is", without warranty of any kind**; the authors and contributors accept **no liability** for outages, data exposure, or any other damage arising from its use. Debug Anything attaches observation tools to running software: **only observe systems you own or are explicitly authorized to debug** — you are solely responsible for authorization and for complying with applicable laws and policies. Observation is not free (ptrace pauses targets; captures and heap dumps can contain secrets), findings are automated diagnostics rather than professional advice, and Debug Anything is an independent project developed by its contributors in their personal capacities, unaffiliated with any employer or with the third-party tools it orchestrates. Full terms: [DISCLAIMER.md](DISCLAIMER.md).

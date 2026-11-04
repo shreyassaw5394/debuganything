@@ -32,20 +32,25 @@ What Debug Anything guarantees:
   captures derive their filter from the target's own ports and refuse to run
   unbounded. `capture_traffic` requires explicit consent on every call.
 - **Redacted payloads.** Bearer/API/AWS/JWT/Stripe/GitHub/Slack tokens,
-  `password=`, private keys and `user:pass@` URLs are scrubbed from everything
-  returned to the agent. **Raw artifacts under `~/.debuganything/sessions/` are not
-  redacted**; treat that directory as sensitive and prune it.
+  `password=` and `--password <value>` flags, cookies, Basic auth, private keys
+  and `user:pass@` URLs are scrubbed (best-effort pattern matching) from
+  everything returned to the agent. **Raw artifacts under
+  `~/.debuganything/sessions/` are not redacted**; they are created readable by
+  your user only (`0700` dirs, `0600` files). Treat that directory as sensitive
+  and prune it.
 - **No network.** Debug Anything makes no outbound connections. The only exception is the
   explicit `debuganything update` command (npm).
 
 Known side effects, by design and documented in results:
 
-- `snapshot_memory` / `dump_stacks` on a Node target may send `SIGUSR1` to
-  enable Node's inspector on `127.0.0.1:9229`. The inspector stays enabled
+- `snapshot_memory` / `dump_stacks` on a Node target, called with
+  `consent: true`, may send `SIGUSR1` to enable Node's inspector on
+  `127.0.0.1:9229`. Without consent they never signal the target, and they only
+  connect to an inspector port owned by the target's pid tree. The inspector stays enabled
   until the process exits and accepts connections from any local user with
   access to that loopback port. Start the target with `--inspect` on a chosen
   port if that matters to you.
-- `attach --kind command` spawns the command you name, as you. Treat it like
+- `attach --kind command` (MCP: `kind: "command"`) spawns the command you name, as you. Treat it like
   running it yourself.
 - `debuganything setup` edits agent config files (`~/.claude.json`,
   `~/.claude/settings.json`, `~/.codex/config.toml`, `~/.cursor/mcp.json`,

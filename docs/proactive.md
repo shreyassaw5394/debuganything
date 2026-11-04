@@ -67,6 +67,7 @@ layers 1 and 2.
   not point the agent at. Proactive means *reacting to a signal the agent
   already saw*.
 - No mutations. The agent may observe without asking; it must still ask before
-  `capture_traffic`, and it must never kill, signal or patch the target.
+  `capture_traffic` and before opening a Node inspector (`consent: true` on `snapshot_memory`/`dump_stacks`),
+  and it must never kill or patch the target.
 - No silence. Every proactive observation ends with a one-paragraph summary
   that cites evidence ids and states limitations.

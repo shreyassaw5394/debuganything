@@ -23,8 +23,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Assemble site
-        run: bash scripts/build-site.sh
+        with:
+          persist-credentials: false
+      # The site lives at debuganything.dev (Vercel). The Pages copy only forwards old links there.
+      - name: Assemble redirect
+        run: |
+          mkdir -p _site
+          for f in index.html 404.html; do
+            printf '%s\n' '<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=https://debuganything.dev/"><link rel="canonical" href="https://debuganything.dev/"><title>Debug Anything</title><p>Moved to <a href="https://debuganything.dev/">debuganything.dev</a>.</p>' > "_site/$f"
+          done
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with: { path: _site }

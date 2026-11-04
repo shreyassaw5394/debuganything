@@ -14,10 +14,12 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v7
         with: { python-version: "3.12" }
       - run: cd python && pip install -e . build pytest && python -m pytest -q tests && python -m build
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
           packages-dir: python/dist
           password: ${{ secrets.PYPI_TOKEN }}

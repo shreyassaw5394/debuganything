@@ -245,4 +245,5 @@ the PR.
   the symptom. No log spelunking, no guessing which flag `strace` needs.
 - The output names a pid, fd, socket state, symbol or source line, and the
   evidence id that backs it.
-- The fix is yours. Debug Anything never kills, truncates, signals or patches anything.
+- The fix is yours. Debug Anything never kills, truncates or patches anything. The one signal it sends is SIGUSR1 to a
+  Node target, to open its inspector, and only with consent.
