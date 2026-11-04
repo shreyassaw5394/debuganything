@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: 22 }
       - run: npm i -g vercel@65.2.0
       # Remote build on Vercel (same path as `vercel deploy --prod` from a laptop); vercel.json holds the build settings.
